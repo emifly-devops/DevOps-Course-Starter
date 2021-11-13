@@ -28,26 +28,32 @@
         {% for item in items %}
           {% set theme = item_status_data[item.status].theme %}
           <li class="list-group-item text-break d-flex justify-content-between align-items-center px-3">
-            <span>{{ item.title }}</span>
-            <div class="btn-group text-nowrap ml-3">
-              <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
-                {{ item.status }}
-              </strong>
-              <button type="button" class="btn btn-sm btn-{{ theme }} dropdown-toggle dropdown-toggle-split"
-                      data-toggle="dropdown" data-display="static" aria-expanded="false">
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <div class="dropdown-menu border-{{ theme }} w-100 py-1" style="min-width: unset;">
-                {% for item_status in item_status_data.keys() %}
-                  {% set is_current_status = item_status == item.status %}
-                  <a class="dropdown-item small text-right pl-3 {{ 'disabled' if is_current_status }}"
-                     href="{{ url_for('update_item_status', item_id=item.id, item_status=item_status) }}"
-                     {% if is_current_status %} aria-disabled="true" tabindex="-1" {% endif %}>
-                    {{ item_status }}
-                  </a>
-                {% endfor %}
-                <span role="presentation" class="position-absolute w-100 h-25"></span>
-              </div>
+            <div>{{ item.title }}</div>
+            <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
+              <span class="btn-group text-nowrap ml-3 my-1">
+                <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
+                  {{ item.status }}
+                </strong>
+                <button type="button" class="btn btn-sm btn-{{ theme }} dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" data-display="static" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu border-{{ theme }} w-100 py-1" style="min-width: unset;">
+                  {% for item_status in item_status_data.keys() %}
+                    {% set is_current_status = item_status == item.status %}
+                    <a class="dropdown-item small text-right pl-3 {{ 'disabled' if is_current_status }}"
+                       href="{{ url_for('update_item_status', item_id=item.id, item_status=item_status) }}"
+                       {% if is_current_status %} aria-disabled="true" tabindex="-1" {% endif %}>
+                      {{ item_status }}
+                    </a>
+                  {% endfor %}
+                  <span role="presentation" class="position-absolute w-100 h-25"></span>
+                </div>
+              </span>
+              <a role="button" class="close ml-3 mb-1" aria-label="Close"
+                 href="{{ url_for('delete_item', item_id=item.id) }}">
+                <span class="align-baseline" aria-hidden="true">×</span>
+              </a>
             </div>
           </li>
         {% endfor %}

@@ -75,3 +75,20 @@ def save_item(item):
     session['items'] = updated_items
 
     return item
+
+
+def remove_item(id):
+    """
+    Removes the item with the specified ID from the session. If no item matches the specified ID, nothing is removed.
+
+    Args:
+        id: The ID of the item to delete.
+    """
+    items = get_items()
+
+    try:
+        items.remove(next(item for item in items if item['id'] == int(id)))
+    except StopIteration:
+        pass
+
+    session['items'] = items

@@ -1,8 +1,8 @@
 from flask import Flask, render_template, redirect, request
 
 from todo_app.flask_config import Config
-from todo_app.data.session_items import get_items, get_item, add_item, save_item, \
-    valid_item_statuses, valid_item_status_data
+from todo_app.data.session_items import valid_item_statuses, valid_item_status_data, \
+    get_items, get_item, add_item, save_item, remove_item
 
 app = Flask(__name__)
 app.config.from_object(Config())
@@ -28,4 +28,10 @@ def update_item_status(item_id, item_status):
     if item is not None and item_status in valid_item_statuses:
         item['status'] = item_status
         save_item(item)
+    return redirect('/')
+
+
+@app.route('/delete/<int:item_id>')
+def delete_item(item_id):
+    remove_item(item_id)
     return redirect('/')

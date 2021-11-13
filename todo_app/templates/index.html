@@ -9,10 +9,24 @@
 
   <div class="row">
     <div class="col-md-12">
+      <form class="mb-4" method="post">
+        <label class="h5" for="title-input">What do you have to do?</label>
+        <div class="input-group">
+          <input class="form-control px-3" type="text" id="title-input" name="title" required>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary">Add to list</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
       <h2>Items</h2>
       <ul class="list-group mb-4">
         {% for item in items %}
-          <li class="list-group-item">{{ item.title }}</li>
+          <li class="list-group-item px-3">{{ item.title }}</li>
         {% endfor %}
       </ul>
     </div>

@@ -6,6 +6,8 @@ valid_item_status_data = {
     'Completed': { 'theme': 'success' }
 }
 
+valid_item_statuses = list(valid_item_status_data.keys())
+
 _DEFAULT_ITEMS = [
     { 'id': 1, 'status': 'Not Started', 'title': 'List saved todo items' },
     { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added' }

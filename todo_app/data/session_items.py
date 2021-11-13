@@ -1,5 +1,11 @@
 from flask import session
 
+valid_item_status_data = {
+    'Not Started': { 'theme': 'secondary' },
+    'In Progress': { 'theme': 'info' },
+    'Completed': { 'theme': 'success' }
+}
+
 _DEFAULT_ITEMS = [
     { 'id': 1, 'status': 'Not Started', 'title': 'List saved todo items' },
     { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added' }

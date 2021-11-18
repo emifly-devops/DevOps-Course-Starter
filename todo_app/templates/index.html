@@ -50,10 +50,31 @@
                   <span role="presentation" class="position-absolute w-100 h-25"></span>
                 </div>
               </span>
-              <a role="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
-                 href="{{ url_for('delete_item', item_id=item.id) }}">
-                <span class="align-baseline" aria-hidden="true">×</span>
-              </a>
+              <button type="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
+                      data-toggle="modal" data-target="#modal-{{ item.id }}">
+                <span class="align-baseline" aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal fade" id="modal-{{ item.id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="list-group-item bg-light rounded">{{ item.title }}</p>
+                    <p>Are you sure you want to delete this task?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <a role="button" class="btn btn-danger"
+                       href="{{ url_for('delete_item', item_id=item.id) }}">Yes, delete</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, cancel</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </li>
         {% endfor %}

@@ -10,15 +10,15 @@ app.config.from_object(Config())
 
 @app.route('/')
 def index():
-    items = sorted(get_items(), key=lambda item: valid_item_statuses.index(item['status']))
+    items = sorted(reversed(get_items()), key=lambda item: valid_item_statuses.index(item['status']))
     return render_template('index.html', items=items, item_status_data=valid_item_status_data)
 
 
 @app.route('/', methods=['POST'])
 def create_item():
     title = request.form.get('title')
-    if title and title.strip():
-        add_item(title)
+    if title is not None and title.strip():
+        add_item(title.strip())
     return redirect('/')
 
 

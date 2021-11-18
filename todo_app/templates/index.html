@@ -2,7 +2,7 @@
 {% block title %}To-Do App{% endblock %}
 
 {% block content %}
-  <div class="jumbotron">
+  <div class="jumbotron bg-dark shadow text-center">
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
   </div>
@@ -11,10 +11,10 @@
     <div class="col-md-12">
       <form class="mb-4" method="post">
         <label class="h5" for="title-input">What do you have to do?</label>
-        <div class="input-group">
-          <input class="form-control px-3" type="text" id="title-input" name="title" required>
+        <div class="input-group shadow">
+          <input class="form-control bg-light px-3" type="text" id="title-input" name="title" required>
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary">Add to list</button>
+            <button class="btn btn-primary">Add to list</button>
           </div>
         </div>
       </form>
@@ -24,11 +24,11 @@
   <div class="row">
     <div class="col-md-12">
       <h2>Items</h2>
-      <ul class="list-group mb-4">
+      <ul class="list-group shadow">
         {% for item in items %}
           {% set theme = item_status_data[item.status].theme %}
-          <li class="list-group-item text-break d-flex justify-content-between align-items-center px-3">
-            <div>{{ item.title }}</div>
+          <li class="list-group-item bg-light text-dark d-flex justify-content-between align-items-center px-3">
+            <div class="text-break">{{ item.title }}</div>
             <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
               <span class="btn-group text-nowrap ml-3 my-1">
                 <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
@@ -50,7 +50,7 @@
                   <span role="presentation" class="position-absolute w-100 h-25"></span>
                 </div>
               </span>
-              <a role="button" class="close ml-3 mb-1" aria-label="Close"
+              <a role="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
                  href="{{ url_for('delete_item', item_id=item.id) }}">
                 <span class="align-baseline" aria-hidden="true">×</span>
               </a>

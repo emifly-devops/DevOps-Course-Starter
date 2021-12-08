@@ -27,34 +27,33 @@
       <ul class="list-group shadow">
         {% for item in items %}
           {% set theme = item_status_data[item.status].theme %}
-          <li class="list-group-item bg-light text-dark d-flex justify-content-between align-items-center px-3">
-            <div class="text-break">{{ item.title }}</div>
-            <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
-              <span class="btn-group text-nowrap ml-3 my-1">
-                <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
-                  {{ item.status }}
-                </strong>
-                <button type="button" class="btn btn-sm btn-{{ theme }} dropdown-toggle dropdown-toggle-split"
-                        data-toggle="dropdown" data-display="static" aria-expanded="false">
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu border-{{ theme }} w-100 py-1" style="min-width: unset;">
-                  {% for item_status in item_status_data.keys() %}
-                    {% set is_current_status = item_status == item.status %}
-                    <a class="dropdown-item small text-right pl-3 {{ 'disabled' if is_current_status }}"
-                       href="{{ url_for('update_item_status', item_id=item.id, item_status=item_status) }}"
-                       {% if is_current_status %} aria-disabled="true" tabindex="-1" {% endif %}>
-                      {{ item_status }}
-                    </a>
-                  {% endfor %}
-                  <span role="presentation" class="position-absolute w-100 h-25"></span>
+          <li class="list-group-item bg-light text-dark px-3">
+            <form class="d-flex justify-content-between align-items-center"
+                  method="post" action="{{ url_for('update_item', item_id=item.id) }}">
+              <div class="text-break">{{ item.title }}</div>
+              <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
+                <div class="btn-group text-nowrap ml-3 my-1">
+                  <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
+                    {{ item.status }}
+                  </strong>
+                  <button type="button" class="btn btn-sm btn-{{ theme }} dropdown-toggle dropdown-toggle-split"
+                          data-toggle="dropdown" data-display="static" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu border-{{ theme }} w-100 py-1" style="min-width: unset;">
+                    {% for item_status in item_status_data.keys() %}
+                      <input type="submit" class="dropdown-item small text-right pl-3"
+                             name="status" value="{{ item_status }}" {{ 'disabled' if item_status == item.status }}>
+                    {% endfor %}
+                    <span role="presentation" class="position-absolute w-100 h-25"></span>
+                  </div>
                 </div>
-              </span>
-              <button type="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
-                      data-toggle="modal" data-target="#modal-{{ item.id }}">
-                <span class="align-baseline" aria-hidden="true">&times;</span>
-              </button>
-            </div>
+                <button type="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
+                        data-toggle="modal" data-target="#modal-{{ item.id }}">
+                  <span class="align-baseline" aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </form>
             <div class="modal fade" id="modal-{{ item.id }}" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
@@ -69,9 +68,10 @@
                     <p>Are you sure you want to delete this task?</p>
                   </div>
                   <div class="modal-footer">
-                    <a role="button" class="btn btn-danger"
-                       href="{{ url_for('delete_item', item_id=item.id) }}">Yes, delete</a>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, cancel</button>
+                    <form method="post" action="{{ url_for('delete_item', item_id=item.id) }}">
+                      <button type="submit" class="btn btn-danger">Yes, delete</button>
+                      <button type="button" class="btn btn-secondary ml-1" data-dismiss="modal">No, cancel</button>
+                    </form>
                   </div>
                 </div>
               </div>

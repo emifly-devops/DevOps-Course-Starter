@@ -22,16 +22,17 @@ def create_item():
     return redirect('/')
 
 
-@app.route('/update/<int:item_id>/status/<string:item_status>')
-def update_item_status(item_id, item_status):
+@app.route('/update/<int:item_id>', methods=['POST'])
+def update_item(item_id):
     item = get_item(item_id)
+    item_status = request.form.get('status')
     if item is not None and item_status in valid_item_statuses:
         item['status'] = item_status
         save_item(item)
     return redirect('/')
 
 
-@app.route('/delete/<int:item_id>')
+@app.route('/delete/<int:item_id>', methods=['POST'])
 def delete_item(item_id):
     remove_item(item_id)
     return redirect('/')

@@ -2,16 +2,82 @@
 {% block title %}To-Do App{% endblock %}
 
 {% block content %}
-  <div class="jumbotron">
+  <div class="jumbotron bg-dark shadow text-center">
     <h1 class="display-4">To-Do App</h1>
     <p class="lead">Just another to-do app.</p>
   </div>
 
   <div class="row">
     <div class="col-md-12">
+      <form class="mb-4" method="post">
+        <label class="h5" for="title-input">What do you have to do?</label>
+        <div class="input-group shadow">
+          <input class="form-control bg-light px-3" type="text" id="title-input" name="title" required>
+          <div class="input-group-append">
+            <button class="btn btn-primary">Add to list</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
       <h2>Items</h2>
-      <ul class="list-group mb-4">
-        <!-- List the todo items here -->
+      <ul class="list-group shadow">
+        {% for item in items %}
+          {% set theme = item_status_data[item.status].theme %}
+          <li class="list-group-item bg-light text-dark px-3">
+            <form class="d-flex justify-content-between align-items-center"
+                  method="post" action="{{ url_for('update_item', item_id=item.id) }}">
+              <div class="text-break">{{ item.title }}</div>
+              <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
+                <div class="btn-group text-nowrap ml-3 my-1">
+                  <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
+                    {{ item.status }}
+                  </strong>
+                  <button type="button" class="btn btn-sm btn-{{ theme }} dropdown-toggle dropdown-toggle-split"
+                          data-toggle="dropdown" data-display="static" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu border-{{ theme }} w-100 py-1" style="min-width: unset;">
+                    {% for item_status in item_status_data.keys() %}
+                      <input type="submit" class="dropdown-item small text-right pl-3"
+                             name="status" value="{{ item_status }}" {{ 'disabled' if item_status == item.status }}>
+                    {% endfor %}
+                    <span role="presentation" class="position-absolute w-100 h-25"></span>
+                  </div>
+                </div>
+                <button type="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
+                        data-toggle="modal" data-target="#modal-{{ item.id }}">
+                  <span class="align-baseline" aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </form>
+            <div class="modal fade" id="modal-{{ item.id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="list-group-item bg-light rounded">{{ item.title }}</p>
+                    <p>Are you sure you want to delete this task?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form method="post" action="{{ url_for('delete_item', item_id=item.id) }}">
+                      <button type="submit" class="btn btn-danger">Yes, delete</button>
+                      <button type="button" class="btn btn-secondary ml-1" data-dismiss="modal">No, cancel</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
       </ul>
     </div>
   </div>

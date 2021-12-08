@@ -1,5 +1,13 @@
 from flask import session
 
+valid_item_status_data = {
+    'Not Started': { 'theme': 'secondary' },
+    'In Progress': { 'theme': 'info' },
+    'Completed': { 'theme': 'success' }
+}
+
+valid_item_statuses = list(valid_item_status_data.keys())
+
 _DEFAULT_ITEMS = [
     { 'id': 1, 'status': 'Not Started', 'title': 'List saved todo items' },
     { 'id': 2, 'status': 'Not Started', 'title': 'Allow new items to be added' }
@@ -67,3 +75,20 @@ def save_item(item):
     session['items'] = updated_items
 
     return item
+
+
+def remove_item(id):
+    """
+    Removes the item with the specified ID from the session. If no item matches the specified ID, nothing is removed.
+
+    Args:
+        id: The ID of the item to delete.
+    """
+    items = get_items()
+
+    try:
+        items.remove(next(item for item in items if item['id'] == int(id)))
+    except StopIteration:
+        pass
+
+    session['items'] = items

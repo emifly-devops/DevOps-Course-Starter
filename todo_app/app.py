@@ -24,9 +24,11 @@ def create_item():
 @app.route('/update/<item_id>', methods=['POST'])
 def update_item(item_id):
     item = get_item(item_id)
-    item_status = request.form.get('status')
-    if item is not None and item_status in valid_item_status_data:
-        item.status = item_status
+    if item is not None:
+        if (item_title := request.form.get('title')) is not None:
+            item.title = item_title
+        if (item_status := request.form.get('status')) in valid_item_status_data:
+            item.status = item_status
         save_item(item)
     return redirect('/')
 

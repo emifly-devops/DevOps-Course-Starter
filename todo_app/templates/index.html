@@ -28,9 +28,15 @@
         {% for item in items %}
           {% set theme = item_status_data[item.status].theme %}
           <li class="list-group-item bg-light text-dark px-3">
-            <form class="d-flex justify-content-between align-items-center"
+            <form class="d-flex justify-content-between align-items-sm-center align-items-start"
                   method="post" action="{{ url_for('update_item', item_id=item.id) }}">
-              <div class="text-break">{{ item.title }}</div>
+              <div class="d-inline-flex flex-sm-row flex-column align-items-sm-center align-items-start">
+                <button type="button" class="close text-{{ theme }} mr-2 mb-1" aria-label="Edit"
+                        data-toggle="modal" data-target="#modal-update-{{ item.id }}">
+                  <span class="align-baseline" aria-hidden="true"><i class="bi bi-pencil-fill small"></i></span>
+                </button>
+                <div class="text-break">{{ item.title }}</div>
+              </div>
               <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
                 <div class="btn-group text-nowrap ml-3 my-1">
                   <strong class="btn btn-sm btn-outline-{{ theme }} disabled" style="width: 6rem; opacity: 1;">
@@ -49,14 +55,38 @@
                   </div>
                 </div>
                 <button type="button" class="close text-{{ theme }} ml-3 mb-1" aria-label="Close"
-                        data-toggle="modal" data-target="#modal-{{ item.id }}">
+                        data-toggle="modal" data-target="#modal-delete-{{ item.id }}">
                   <span class="align-baseline" aria-hidden="true">&times;</span>
                 </button>
               </div>
             </form>
-            <div class="modal fade" id="modal-{{ item.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="modal-update-{{ item.id }}" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog">
-                <div class="modal-content">
+                <form class="modal-content" method="post" action="{{ url_for('update_item', item_id=item.id) }}">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Update item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="title-{{ item.id }}">Title</label>
+                      <input type="text" class="form-control"
+                             id="title-{{ item.id }}" name="title" value="{{ item.title }}" required>
+                    </div>
+                    <p class="mb-0">Are you sure you want to apply these changes?</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Yes, update</button>
+                    <button type="button" class="btn btn-secondary ml-1" data-dismiss="modal">No, cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="modal fade" id="modal-delete-{{ item.id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <form class="modal-content" method="post" action="{{ url_for('delete_item', item_id=item.id) }}">
                   <div class="modal-header">
                     <h5 class="modal-title">Confirm deletion</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -65,15 +95,13 @@
                   </div>
                   <div class="modal-body">
                     <p class="list-group-item bg-light rounded">{{ item.title }}</p>
-                    <p>Are you sure you want to delete this task?</p>
+                    <p class="mb-0">Are you sure you want to delete this task?</p>
                   </div>
                   <div class="modal-footer">
-                    <form method="post" action="{{ url_for('delete_item', item_id=item.id) }}">
-                      <button type="submit" class="btn btn-danger">Yes, delete</button>
-                      <button type="button" class="btn btn-secondary ml-1" data-dismiss="modal">No, cancel</button>
-                    </form>
+                    <button type="submit" class="btn btn-danger">Yes, delete</button>
+                    <button type="button" class="btn btn-secondary ml-1" data-dismiss="modal">No, cancel</button>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
           </li>

@@ -44,8 +44,9 @@ def get_list_id(list_name):
 
 class Item:
 
-    def __init__(self, title, status='To Do', id=None):
+    def __init__(self, title, description='', status='To Do', id=None):
         self.title = title
+        self.description = description
         self.status = status
         self.id = id
 
@@ -53,6 +54,7 @@ class Item:
     def from_trello_card(cls, card, status):
         return cls(
             title=card['name'],
+            description=card['desc'],
             status=status,
             id=card['id'],
         )
@@ -60,6 +62,7 @@ class Item:
     def to_trello_card(self):
         return {
             'name': self.title,
+            'desc': self.description,
             'idList': get_list_id(self.status),
         }
 

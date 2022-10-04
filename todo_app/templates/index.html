@@ -31,11 +31,11 @@
             <form class="d-flex justify-content-between align-items-sm-center align-items-start"
                   method="post" action="{{ url_for('update_item', item_id=item.id) }}">
               <div class="d-inline-flex flex-sm-row flex-column align-items-sm-center align-items-start">
-                <button type="button" class="close text-{{ theme }} mr-2 mb-1" aria-label="Edit"
+                <button type="button" class="close text-{{ theme }} mr-3 mb-1" aria-label="Edit"
                         data-toggle="modal" data-target="#modal-update-{{ item.id }}">
                   <span class="align-baseline" aria-hidden="true"><i class="bi bi-pencil-fill small"></i></span>
                 </button>
-                <div class="text-break">{{ item.title }}</div>
+                <div class="text-break">{{ item.title }}<br><small>{{ item.description }}</small></div>
               </div>
               <div class="d-inline-flex flex-sm-row flex-column-reverse align-items-sm-center align-items-end">
                 <div class="btn-group text-nowrap ml-3 my-1">
@@ -74,6 +74,11 @@
                       <label for="title-{{ item.id }}">Title</label>
                       <input type="text" class="form-control"
                              id="title-{{ item.id }}" name="title" value="{{ item.title }}" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="description-{{ item.id }}">Description</label>
+                      <textarea class="form-control"
+                                id="description-{{ item.id }}" name="description">{{ item.description }}</textarea>
                     </div>
                     <p class="mb-0">Are you sure you want to apply these changes?</p>
                   </div>

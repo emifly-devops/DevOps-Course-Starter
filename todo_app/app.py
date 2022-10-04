@@ -27,6 +27,8 @@ def update_item(item_id):
     if item is not None:
         if (item_title := request.form.get('title')) is not None:
             item.title = item_title
+        if (item_description := request.form.get('description')) is not None:
+            item.description = item_description
         if (item_status := request.form.get('status')) in valid_item_status_data:
             item.status = item_status
         save_item(item)

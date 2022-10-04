@@ -30,16 +30,38 @@ valid_item_status_data = {
 }
 
 
-def get_list_id(item_status):
+def get_list_id(list_name):
     board_lists = trello_api_request("GET", f"/boards/{current_app.config['TRELLO_BOARD_ID']}/lists").json()
     try:
-        return next(filter(lambda board_list: board_list['name'] == item_status, board_lists))['id']
+        return next(filter(lambda board_list: board_list['name'] == list_name, board_lists))['id']
     except StopIteration:
         list_to_add = {
-            'name': item_status,
+            'name': list_name,
             'pos': 'bottom',
         }
         return trello_api_request("POST", f"/boards/{current_app.config['TRELLO_BOARD_ID']}/lists", data=list_to_add).json()['id']
+
+
+class Item:
+
+    def __init__(self, title, status='To Do', id=None):
+        self.title = title
+        self.status = status
+        self.id = id
+
+    @classmethod
+    def from_trello_card(cls, card, status):
+        return cls(
+            title=card['name'],
+            status=status,
+            id=card['id'],
+        )
+
+    def to_trello_card(self):
+        return {
+            'name': self.title,
+            'idList': get_list_id(self.status),
+        }
 
 
 def get_items():
@@ -51,13 +73,11 @@ def get_items():
     """
     try:
         items = []
-        for item_status in valid_item_status_data:
-            list_id = get_list_id(item_status)
-            items_in_list = trello_api_request("GET", f"/lists/{list_id}/cards").json()
-            for item in items_in_list:
-                item['title'] = item['name']
-                item['status'] = item_status
-                items.append(item)
+        for status in valid_item_status_data:
+            list_id = get_list_id(list_name=status)
+            items_in_list = map(lambda card: Item.from_trello_card(card, status),
+                                trello_api_request("GET", f"/lists/{list_id}/cards").json())
+            items.extend(items_in_list)
         return items
     except RequestException:
         return None
@@ -74,9 +94,9 @@ def get_item(id):
         item: The saved item, or None if no items match the specified ID.
     """
     try:
-        item = trello_api_request("GET", f"/cards/{id}").json()
-        list_containing_item = trello_api_request("GET", f"/lists/{item['idList']}").json()
-        item['status'] = list_containing_item['name']
+        card = trello_api_request("GET", f"/cards/{id}").json()
+        list_containing_card = trello_api_request("GET", f"/lists/{card['idList']}").json()
+        item = Item.from_trello_card(card=card, status=list_containing_card['name'])
         return item
     except RequestException:
         return None
@@ -92,12 +112,10 @@ def add_item(title):
     Returns:
         item: The saved item.
     """
-    item_to_add = {
-        'name': title,
-        'idList': get_list_id("To Do"),
-    }
+    item = Item(title)
     try:
-        return trello_api_request("POST", "/cards", data=item_to_add).json()
+        response_card = trello_api_request("POST", "/cards", data=item.to_trello_card()).json()
+        return Item.from_trello_card(response_card, item.status)
     except RequestException:
         return None
 
@@ -113,11 +131,8 @@ def save_item(item):
         item: The updated item.
     """
     try:
-        item_to_save = {
-            'name': item['name'],
-            'idList': get_list_id(item['status']),
-        }
-        return trello_api_request("PUT", f"/cards/{item['id']}", data=item_to_save).json()
+        response_card = trello_api_request("PUT", f"/cards/{item.id}", data=item.to_trello_card()).json()
+        return Item.from_trello_card(response_card, item.status)
     except RequestException:
         return None
 

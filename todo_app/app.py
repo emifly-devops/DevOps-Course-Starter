@@ -26,7 +26,7 @@ def update_item(item_id):
     item = get_item(item_id)
     item_status = request.form.get('status')
     if item is not None and item_status in valid_item_status_data:
-        item['status'] = item_status
+        item.status = item_status
         save_item(item)
     return redirect('/')
 

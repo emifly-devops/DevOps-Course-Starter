@@ -2,7 +2,8 @@
 
 ## System Requirements
 
-The project uses poetry for Python to create an isolated environment and manage package dependencies. To prepare your system, ensure you have an official distribution of Python version 3.7+ and install Poetry using one of the following commands (as instructed by the [poetry documentation](https://python-poetry.org/docs/#system-requirements)):
+The project uses poetry for Python to create an isolated environment and manage package dependencies.
+To prepare your system, ensure you have an official distribution of Python version 3.7+ and install Poetry using one of the following commands (as instructed by the [poetry documentation](https://python-poetry.org/docs/#system-requirements)):
 
 ### Poetry installation (Bash)
 
@@ -30,7 +31,31 @@ You'll also need to clone a new `.env` file from the `.env.template` to store lo
 $ cp .env.template .env  # (first time only)
 ```
 
-The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
+The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change).
+There are also some Trello variables that need to be set, which are detailed below.
+
+## Trello
+
+You will need to [set up a Trello account](https://trello.com/signup) and create a new board in order to run this project. Once you have done so, there are three Trello variables that need to be set in your `.env` file.
+Here is how each of these can be obtained:
+
+```dotenv
+TRELLO_KEY
+```
+Your personal Trello app key can be found at the top of the [developer API keys page](https://trello.com/app-key) when signed in.
+
+```dotenv
+TRELLO_TOKEN
+```
+On the same page, just below your personal Trello app key, there is a link to manually generate a token. Follow the steps to obtain a token.
+
+```dotenv
+TRELLO_BOARD_ID
+```
+A suitable board ID can be obtained from the URL of the board you created after signing up.
+The URL will be of the form `https://trello.com/b/<board ID>/<board name>`.
+
+For example, if your board URL is `https://trello.com/b/12345678/to-do-board`, your board ID will be `12345678`.
 
 ## Running the App
 

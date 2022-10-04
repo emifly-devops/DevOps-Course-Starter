@@ -2,6 +2,7 @@ from requests import request
 from requests.exceptions import RequestException
 from requests_oauthlib import OAuth1
 from flask import current_app
+from functools import lru_cache
 
 trello_api_base_url = "https://api.trello.com/1"
 
@@ -30,6 +31,7 @@ valid_item_status_data = {
 }
 
 
+@lru_cache(maxsize=None)
 def get_list_id(list_name):
     board_lists = trello_api_request("GET", f"/boards/{current_app.config['TRELLO_BOARD_ID']}/lists").json()
     try:

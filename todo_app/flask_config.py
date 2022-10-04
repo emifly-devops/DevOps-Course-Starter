@@ -3,7 +3,12 @@ import os
 
 class Config:
     def __init__(self):
-        """Base configuration variables."""
-        self.SECRET_KEY = os.environ.get('SECRET_KEY')
-        if not self.SECRET_KEY:
-            raise ValueError("No SECRET_KEY set for Flask application. Did you follow the setup instructions?")
+        trello_config_vars = [
+            'TRELLO_KEY',
+            'TRELLO_TOKEN',
+            'TRELLO_BOARD_ID',
+        ]
+        for config_var in trello_config_vars:
+            setattr(self, config_var, os.environ.get(config_var))
+            if not getattr(self, config_var):
+                raise ValueError(f"{config_var} not set for Flask application.")

@@ -9,7 +9,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <form class="mb-4" method="post">
+      <form class="mb-4" method="post" action="{{ url_for('create_item') }}">
         <label class="h5" for="title-input">What do you have to do?</label>
         <div class="input-group shadow">
           <input class="form-control bg-light px-3" type="text" id="title-input" name="title" required>
@@ -41,7 +41,7 @@
                     <span class="sr-only">Toggle Dropdown</span>
                   </button>
                   <div class="dropdown-menu border-{{ theme }} w-100 py-1" style="min-width: unset;">
-                    {% for item_status in item_status_data.keys() %}
+                    {% for item_status in item_status_data %}
                       <input type="submit" class="dropdown-item small text-right pl-3"
                              name="status" value="{{ item_status }}" {{ 'disabled' if item_status == item.status }}>
                     {% endfor %}

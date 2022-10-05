@@ -8,7 +8,7 @@ To prepare your system, ensure you have an official distribution of Python versi
 ### Poetry installation (Bash)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+$ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 ```
 
 ### Poetry installation (PowerShell)
@@ -17,12 +17,21 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-
 (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python -
 ```
 
+If you wish to run the end-to-end tests associated with the app, you will also need to have Node installed - follow the [installation steps on the website](https://nodejs.org/).
+It should come with the package manager NPM, which is also required.
+
 ## Dependencies
 
 The project uses a virtual environment to isolate package dependencies. To create the virtual environment and install required packages, run the following from your preferred shell:
 
 ```bash
 $ poetry install
+```
+
+For the end-to-end tests, you will need to install the dependencies in the `package.json` file using the following command:
+
+```bash
+$ npm install
 ```
 
 You'll also need to clone a new `.env` file from the `.env.template` to store local configuration options. This is a one-time operation on first setup:
@@ -60,11 +69,19 @@ For example, if your board URL is `https://trello.com/b/12345678/to-do-board`, y
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
+
 ```bash
 $ poetry run flask run
 ```
 
+Alternatively, if you have chosen to install Node, you can simply run the following command:
+
+```bash
+$ npm start
+```
+
 You should see output similar to the following:
+
 ```bash
  * Serving Flask app "app" (lazy loading)
  * Environment: development
@@ -74,4 +91,25 @@ You should see output similar to the following:
  * Debugger is active!
  * Debugger PIN: 226-556-590
 ```
+
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+## Running the Tests
+
+Use the following command to run the unit and integration tests associated with the app:
+
+```bash
+$ poetry run pytest
+```
+
+Alternatively, if you have chosen to install Node, you may run the following instead:
+
+```bash
+$ npm run test:pytest
+```
+
+This project uses Cypress for some basic end-to-end testing. To run these tests, you will need to first start the app, and then use the following command:
+
+```bash
+$ npm run test:cypress
+```

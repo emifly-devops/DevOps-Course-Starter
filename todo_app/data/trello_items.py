@@ -1,6 +1,6 @@
 from requests.exceptions import RequestException
 
-from todo_app.helpers.trello_helpers import trello_api_request, get_list_id
+from todo_app.helpers.trello_helpers import trello_api_request, get_list_id_from_name
 from todo_app.models.data.item import Item
 
 
@@ -30,9 +30,8 @@ def get_items():
     try:
         items = []
         for status in valid_item_status_data:
-            list_id = get_list_id(list_name=status)
-            items_in_list = map(lambda card: Item.from_trello_card(card, status),
-                                trello_api_request("GET", f"/lists/{list_id}/cards").json())
+            list_id = get_list_id_from_name(list_name=status)
+            items_in_list = map(Item.from_trello_card, trello_api_request("GET", f"/lists/{list_id}/cards").json())
             items.extend(items_in_list)
         return items
     except RequestException:
@@ -51,8 +50,7 @@ def get_item(id):
     """
     try:
         card = trello_api_request("GET", f"/cards/{id}").json()
-        list_containing_card = trello_api_request("GET", f"/lists/{card['idList']}").json()
-        item = Item.from_trello_card(card=card, status=list_containing_card['name'])
+        item = Item.from_trello_card(card)
         return item
     except RequestException:
         return None
@@ -71,7 +69,7 @@ def add_item(title):
     item = Item(title)
     try:
         response_card = trello_api_request("POST", "/cards", data=item.to_trello_card()).json()
-        return Item.from_trello_card(response_card, item.status)
+        return Item.from_trello_card(response_card)
     except RequestException:
         return None
 
@@ -88,7 +86,7 @@ def save_item(item):
     """
     try:
         response_card = trello_api_request("PUT", f"/cards/{item.id}", data=item.to_trello_card()).json()
-        return Item.from_trello_card(response_card, item.status)
+        return Item.from_trello_card(response_card)
     except RequestException:
         return None
 

@@ -1,4 +1,4 @@
-from todo_app.helpers.trello_helpers import get_list_id
+from todo_app.helpers.trello_helpers import get_list_id_from_name, get_list_name_from_id
 
 
 class Item:
@@ -10,11 +10,11 @@ class Item:
         self.id = id
 
     @classmethod
-    def from_trello_card(cls, card, status):
+    def from_trello_card(cls, card):
         return cls(
             title=card['name'],
             description=card['desc'],
-            status=status,
+            status=get_list_name_from_id(card['idList']),
             id=card['id'],
         )
 
@@ -22,5 +22,6 @@ class Item:
         return {
             'name': self.title,
             'desc': self.description,
-            'idList': get_list_id(self.status),
+            'idList': get_list_id_from_name(self.status),
+            'id': self.id,
         }

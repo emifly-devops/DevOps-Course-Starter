@@ -3,47 +3,59 @@ Vagrant.configure("2") do |config|
 
   config.vm.network "forwarded_port", guest: 5000, host: 5000
 
-  config.vm.provision "shell", privileged: false, inline: <<-SHELL
-    sudo apt-get update && sudo apt-get upgrade
-    sudo apt-get install -y make \
-                            build-essential \
-                            libssl-dev \
-                            zlib1g-dev \
-                            libbz2-dev \
-                            libreadline-dev \
-                            libsqlite3-dev \
-                            wget \
-                            curl \
-                            llvm \
-                            libncursesw5-dev \
-                            xz-utils \
-                            tk-dev \
-                            libxml2-dev \
-                            libxmlsec1-dev \
-                            libffi-dev \
-                            liblzma-dev
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "=== INSTALL KEY DEPENDENCIES ==="
 
-    rm ~/.bashrc
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    apt-get update && apt-get upgrade
+    apt-get install -y make \
+                       build-essential \
+                       libssl-dev \
+                       zlib1g-dev \
+                       libbz2-dev \
+                       libreadline-dev \
+                       libsqlite3-dev \
+                       wget \
+                       curl \
+                       llvm \
+                       libncursesw5-dev \
+                       xz-utils \
+                       tk-dev \
+                       libxml2-dev \
+                       libxmlsec1-dev \
+                       libffi-dev \
+                       liblzma-dev
 
-    echo -e '\n# pyenv setup' >> ~/.profile
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
-    echo 'command -v pyenv >/dev/null || export PATH="$PATH:$PYENV_ROOT/bin"' >> ~/.profile
-    echo 'eval "$(pyenv init -)"' >> ~/.profile
+    echo "=== INSTALL NODE AND NPM USING NVM ==="
 
-    echo -e '\n# poetry setup' >> ~/.profile
-    echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.profile
+    export NVM_DIR="/opt/nvm" && (
+      git clone https://github.com/nvm-sh/nvm.git $NVM_DIR
+      cd $NVM_DIR
+      git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+    ) && source $NVM_DIR/nvm.sh
 
-    source ~/.profile
+    nvm install 16.17.1
+
+    ln -s $NVM_DIR/versions/node/v$(cat $NVM_DIR/alias/default)/bin/node /usr/local/bin/node
+    ln -s $NVM_DIR/versions/node/v$(cat $NVM_DIR/alias/default)/bin/npm /usr/local/bin/npm
+
+    echo "=== INSTALL PYTHON AND POETRY USING PYENV ==="
+
+    export PYENV_ROOT="/opt/pyenv" && (
+      git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
+      ln -s $PYENV_ROOT/bin/pyenv /usr/local/bin/pyenv
+      eval "$(pyenv init -)"
+    )
 
     pyenv install 3.10.7
     pyenv global 3.10.7
 
-    nvm install 16.17.1
-    nvm alias default 16.17.1
+    ln -s $PYENV_ROOT/shims/python /usr/local/bin/python
 
-    curl -sSL https://install.python-poetry.org | python -
+    export POETRY_HOME="/opt/poetry" && (
+      curl -sSL https://install.python-poetry.org | python -
+    )
+
+    ln -s $POETRY_HOME/bin/poetry /usr/local/bin/poetry
   SHELL
 
   config.trigger.after :up do |trigger|

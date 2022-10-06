@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python,flask,node,cypressio,windows,macos,jetbrains,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=python,flask,node,cypressio,windows,macos,jetbrains,visualstudiocode
+# Created by https://www.toptal.com/developers/gitignore/api/python,flask,node,cypressio,vagrant,windows,macos,jetbrains,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=python,flask,node,cypressio,vagrant,windows,macos,jetbrains,visualstudiocode
 
 ### CypressIO ###
 # gitignore template for the CypressIO, browser test framework
@@ -541,6 +541,16 @@ dist
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 
+### Vagrant ###
+# General
+.vagrant/
+
+# Log files (if you are creating logs in debug mode, uncomment this)
+# *.log
+
+### Vagrant Patch ###
+*.box
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -592,4 +602,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/python,flask,node,cypressio,windows,macos,jetbrains,visualstudiocode
+# End of https://www.toptal.com/developers/gitignore/api/python,flask,node,cypressio,vagrant,windows,macos,jetbrains,visualstudiocode

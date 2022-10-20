@@ -8,4 +8,4 @@ class ItemsViewModel:
         self.item_status_data = valid_item_status_data
 
     def get_items_with_status(self, status):
-        return list(filter(lambda item: item.status == status, self.items))
+        return list(filter(lambda item: item.status == status, self.items)) if self.items else None

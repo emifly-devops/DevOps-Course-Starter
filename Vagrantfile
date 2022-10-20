@@ -64,10 +64,13 @@ Vagrant.configure("2") do |config|
     trigger.run_remote = {privileged: false, inline: "
       cd /vagrant
 
+      export $(cat .env | grep '^TRELLO' | xargs)
+
       npm install
       poetry install
 
-      nohup poetry run flask run --host=0.0.0.0 > logs.txt 2>&1 &
+      poetry run gunicorn --bind 0.0.0.0:5000 'todo_app.app:create_app()' \
+        --access-logfile 'access.log' --error-logfile 'error.log' --daemon
     "}
   end
 end

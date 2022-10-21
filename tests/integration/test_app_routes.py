@@ -70,7 +70,8 @@ def request_stub(method, url, **kwargs):
     # Board endpoints
     if method == "GET" and url == f"{trello_api_base_url}/boards/{test_board_id}/lists":
         return StubResponse(fake_response_data=[test_to_do_list, test_doing_list, test_done_list])
-    if method == "POST" and url == f"{trello_api_base_url}/boards/{test_board_id}/lists":
+    if method == "POST" and url == f"{trello_api_base_url}/boards/{test_board_id}/lists" \
+            and kwargs.get('data') is not None and 'name' in kwargs['data']:
         return StubResponse(fake_response_data={**kwargs['data'], 'id': 'test-list-new'})
 
     # List endpoints
@@ -84,16 +85,19 @@ def request_stub(method, url, **kwargs):
 
     # Card endpoints
     if method == "POST" and url == f"{trello_api_base_url}/cards" \
-            and all(key in kwargs['data'] for key in ['name', 'desc', 'idList']):
+            and kwargs.get('data') is not None and all(key in kwargs['data'] for key in ['name', 'desc', 'idList']):
         return StubResponse(fake_response_data={**kwargs['data'], 'id': '031c3d1d3d902a6a89d20ae9'})
     for test_card in [test_to_do_card, test_doing_card, test_done_card]:
         if method == "GET" and url == f"{trello_api_base_url}/cards/{test_card['id']}":
             return StubResponse(fake_response_data=test_card)
         if method == "PUT" and url == f"{trello_api_base_url}/cards/{test_card['id']}" \
-                and any(key in kwargs['data'] for key in ['name', 'desc', 'idList']):
+                and kwargs.get('data') is not None and any(key in kwargs['data'] for key in ['name', 'desc', 'idList']):
             return StubResponse(fake_response_data={**test_card, **kwargs['data']})
         if method == "DELETE" and url == f"{trello_api_base_url}/cards/{test_card['id']}":
             return StubResponse()
+
+    # Unhandled endpoints
+    raise NotImplementedError(f"Endpoint {url} not implemented for method {method} and data {kwargs.get('data')}")
 
 
 def test_index(monkeypatch, client):

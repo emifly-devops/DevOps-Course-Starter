@@ -8,17 +8,21 @@ To prepare your system, ensure you have an official distribution of Python versi
 ### Poetry installation (Bash)
 
 ```bash
-$ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+$ curl -sSL https://install.python-poetry.org | python -
 ```
 
 ### Poetry installation (PowerShell)
 
 ```powershell
-(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python -
+PS> (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
 ```
 
 If you wish to run the end-to-end tests associated with the app, you will also need to have Node installed - follow the [installation steps on the website](https://nodejs.org/).
 It should come with the package manager NPM, which is also required.
+
+Another optional installation is Vagrant, for which a production configuration has been provided if you want to run the app in a virtual machine.
+Again, follow the [installation steps on the website](https://www.vagrantup.com) if this is of interest.
+You will need a hypervisor available if you choose to take this route. If in doubt, [VirtualBox](https://www.virtualbox.org) is a good option.
 
 ## Dependencies
 
@@ -80,19 +84,13 @@ Alternatively, if you have chosen to install Node, you can simply run the follow
 $ npm start
 ```
 
-You should see output similar to the following:
+As another alternative, if you have chosen to install Vagrant, you can run the following:
 
 ```bash
- * Serving Flask app "app" (lazy loading)
- * Environment: development
- * Debug mode: on
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
- * Restarting with fsevents reloader
- * Debugger is active!
- * Debugger PIN: 226-556-590
+$ vagrant up
 ```
 
-Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
 ## Running the Tests
 

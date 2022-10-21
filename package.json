@@ -3,7 +3,8 @@
   "scripts": {
     "start": "poetry run flask run",
     "test:pytest": "poetry run pytest",
-    "test:cypress": "npx cypress open"
+    "test:cypress": "npx cypress run",
+    "open:cypress": "npx cypress open"
   },
   "repository": {
     "type": "git",

@@ -32,15 +32,9 @@ def create_app():
     def update_item(item_id):
         item = get_item(item_id)
         if item is not None:
-            item_title = request.form.get('title')
-            item_description = request.form.get('description')
-            item_status = request.form.get('status')
-            if item_title is not None:
-                item.title = item_title
-            if item_description is not None:
-                item.description = item_description
-            if item_status in valid_item_status_data:
-                item.status = item_status
+            item.title = request.form.get('title', item.title)
+            item.description = request.form.get('description', item.description)
+            item.status = request.form.get('status', item.status)
             save_item(item)
         return redirect('/')
 

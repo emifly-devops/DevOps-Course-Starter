@@ -1,0 +1,17 @@
+{
+  "name": "devops-course-starter",
+  "scripts": {
+    "start": "poetry run flask run",
+    "test:pytest": "poetry run pytest",
+    "test:cypress": "npx cypress run",
+    "open:cypress": "npx cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emifly-devops/DevOps-Course-Starter.git"
+  },
+  "homepage": "https://github.com/emifly-devops/DevOps-Course-Starter#readme",
+  "devDependencies": {
+    "cypress": "^10.9.0"
+  }
+}

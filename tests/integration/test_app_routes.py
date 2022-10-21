@@ -8,19 +8,19 @@ from todo_app.helpers.trello_helpers import trello_api_base_url
 
 
 test_to_do_card = {
-    'id': 'test-card-1',
+    'id': '1d28f892a5408afb535797e0',
     'name': 'Task I have not started yet',
     'desc': 'This one looks tricky',
     'idList': 'test-list-1',
 }
 test_doing_card = {
-    'id': 'test-card-2',
+    'id': '2700338fe4fc83f4750bf57f',
     'name': 'Task I am partway through',
     'desc': 'This is taking a while',
     'idList': 'test-list-2',
 }
 test_done_card = {
-    'id': 'test-card-3',
+    'id': '33bfdd95e5f75a19a99f1fe1',
     'name': 'Task I have finished',
     'desc': 'This went well',
     'idList': 'test-list-3',
@@ -85,7 +85,7 @@ def request_stub(method, url, **kwargs):
     # Card endpoints
     if method == "POST" and url == f"{trello_api_base_url}/cards" \
             and all(key in kwargs['data'] for key in ['name', 'desc', 'idList']):
-        return StubResponse(fake_response_data={**kwargs['data'], 'id': 'test-card-new'})
+        return StubResponse(fake_response_data={**kwargs['data'], 'id': '031c3d1d3d902a6a89d20ae9'})
     for test_card in [test_to_do_card, test_doing_card, test_done_card]:
         if method == "GET" and url == f"{trello_api_base_url}/cards/{test_card['id']}":
             return StubResponse(fake_response_data=test_card)

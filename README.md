@@ -2,27 +2,42 @@
 
 ## System Requirements
 
-The project uses poetry for Python to create an isolated environment and manage package dependencies.
+The project uses Poetry for Python to create an isolated environment and manage package dependencies.
 To prepare your system, ensure you have an official distribution of Python version 3.7+ and install Poetry using one of the following commands (as instructed by the [poetry documentation](https://python-poetry.org/docs/#system-requirements)):
 
-### Poetry installation (Bash)
+### Poetry Installation (Bash)
 
 ```bash
 $ curl -sSL https://install.python-poetry.org | python -
 ```
 
-### Poetry installation (PowerShell)
+### Poetry Installation (PowerShell)
 
 ```powershell
 PS> (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
 ```
 
+## Optional Installations
+
+### Node and NPM
+
 If you wish to run the end-to-end tests associated with the app, you will also need to have Node installed - follow the [installation steps on the website](https://nodejs.org/).
 It should come with the package manager NPM, which is also required.
 
-Another optional installation is Vagrant, for which a production configuration has been provided if you want to run the app in a virtual machine.
+### Vagrant
+
+A production configuration has been provided for Vagrant if you wish to run the app in a virtual machine.
 Again, follow the [installation steps on the website](https://www.vagrantup.com) if this is of interest.
 You will need a hypervisor available if you choose to take this route. If in doubt, [VirtualBox](https://www.virtualbox.org) is a good option.
+
+### Ansible
+
+A production configuration has been provided for Ansible if you wish to run the app on a managed node.
+To install Ansible, simply run the following in the terminal of the machine you wish to use as the control node:
+
+```bash
+$ pip install ansible
+```
 
 ## Dependencies
 
@@ -70,7 +85,7 @@ The URL will be of the form `https://trello.com/b/<board ID>/<board name>`.
 
 For example, if your board URL is `https://trello.com/b/12345678/to-do-board`, your board ID will be `12345678`.
 
-## Running the App
+## Running the App with a Development Configuration
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
 
@@ -84,13 +99,27 @@ Alternatively, if you have chosen to install Node, you can simply run the follow
 $ npm start
 ```
 
-As another alternative, if you have chosen to install Vagrant, you can run the following:
+In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+## Running the App with a Production Configuration
+
+If you have chosen to install Vagrant, run the following to try out a production configuration locally:
 
 ```bash
 $ vagrant up
 ```
 
-In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+With this option, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app, as before.
+
+If you have chosen to install Ansible, run the following from your control node:
+
+```bash
+$ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
+```
+
+You will be prompted to enter your Trello secret variables.
+With this option, visit the IP address of your managed node in your browser to view the app.
+Note that the app is only served over HTTP, not HTTPS.
 
 ## Running the Tests
 

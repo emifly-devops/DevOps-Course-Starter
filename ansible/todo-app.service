@@ -1,9 +1,10 @@
 [Unit]
 Description=My To-Do App
+Requires=todo-app.socket
 
 [Service]
 User=ec2-user
 WorkingDirectory=/opt/todo-app
 EnvironmentFile=/opt/todo-app/.env
-ExecStart=/home/ec2-user/.local/bin/poetry run gunicorn --bind 0.0.0.0:5000 'todo_app.app:create_app()' \
+ExecStart=/home/ec2-user/.local/bin/poetry run gunicorn --bind 0.0.0.0:80 'todo_app.app:create_app()' \
   --access-logfile 'access.log' --error-logfile 'error.log'

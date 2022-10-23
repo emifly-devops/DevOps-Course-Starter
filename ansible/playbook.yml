@@ -38,10 +38,11 @@
       template:
         src: .env.j2
         dest: /opt/todo-app/.env
-    - name: Copy To-Do App service file into system directory
+    - name: Copy To-Do App service files into system directory
       copy:
-        src: todo-app.service
-        dest: /etc/systemd/system/todo-app.service
+        src: "{{ item }}"
+        dest: /etc/systemd/system/
+      with_fileglob: "todo-app.*"
       become: yes
     - name: Start To-Do App service
       systemd:

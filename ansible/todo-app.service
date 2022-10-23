@@ -8,4 +8,4 @@ WorkingDirectory=/opt/todo-app
 EnvironmentFile=/opt/todo-app/.env
 Environment=POETRY_CACHE_DIR=/opt/poetry/.cache
 ExecStart=/opt/poetry/bin/poetry run gunicorn --bind 0.0.0.0:80 'todo_app.app:create_app()' \
-  --access-logfile /home/todo-app/access.log --error-logfile /home/todo-app/error.log
+  --access-logfile '/home/todo-app/access.log' --error-logfile '/home/todo-app/error.log'

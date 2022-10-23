@@ -9,6 +9,11 @@
     - name: trello_board_id
       prompt: Please enter your Trello board ID
   tasks:
+    - name: Create non-privileged todo-app user
+      user:
+        name: todo-app
+        password: $6$/kzBrrz3VjC9WutE$G7at1stilzmz2TYYqGZ0D99cQIzvkMGJJFZrOT/slqu21NoCzmEWHcR44asECjuIarZ4MQTEsizcrH50dqaAM0
+      become: yes
     - name: Install Git and Python 3
       yum:
         name:
@@ -18,8 +23,11 @@
       become: yes
     - name: Install Poetry
       shell: curl -sSL https://install.python-poetry.org | python3 -
+      environment:
+        POETRY_HOME: /opt/poetry
       args:
-        creates: ~/.local/bin/poetry
+        creates: /opt/poetry/bin/poetry
+      become: yes
     - name: Create directory for To-Do App code
       file:
         path: /opt/todo-app
@@ -31,9 +39,12 @@
         repo: 'https://github.com/emifly-devops/DevOps-Course-Starter.git'
         dest: /opt/todo-app
     - name: Install project dependencies using Poetry
-      command: ~/.local/bin/poetry install
+      command: /opt/poetry/bin/poetry install
+      environment:
+        POETRY_CACHE_DIR: /opt/poetry/.cache
       args:
         chdir: /opt/todo-app
+      become: yes
     - name: Create .env file in To-Do App directory
       template:
         src: .env.j2

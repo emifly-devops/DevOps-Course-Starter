@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Environment
+env
+venv
+.env
+.venv
+
+# JetBrains
+.idea
+
+# Visual Studio Code
+.vscode
+
+# Ansible
+ansible
+
+# Docker
+Dockerfile
+
+# Vagrant
+Vagrantfile
+
+# Documentation
+README.md
+
+# Python
+**/__pycache__
+
+# Node
+node_modules

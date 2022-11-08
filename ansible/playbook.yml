@@ -1,0 +1,62 @@
+- name: Install To-Do App on new web server
+  hosts: webservers
+  remote_user: ec2-user
+  vars_prompt:
+    - name: trello_key
+      prompt: Please enter your Trello API key
+    - name: trello_token
+      prompt: Please enter your Trello app token
+    - name: trello_board_id
+      prompt: Please enter your Trello board ID
+  tasks:
+    - name: Create non-privileged todo-app user
+      user:
+        name: todo-app
+      become: yes
+    - name: Install Git and Python 3
+      yum:
+        name:
+          - git
+          - python3
+        state: latest
+      become: yes
+    - name: Install Poetry
+      shell: curl -sSL https://install.python-poetry.org | python3 -
+      environment:
+        POETRY_HOME: /opt/poetry
+      args:
+        creates: /opt/poetry/bin/poetry
+      become: yes
+    - name: Create directory for To-Do App code
+      file:
+        path: /opt/todo-app
+        state: directory
+        owner: ec2-user
+      become: yes
+    - name: Clone To-Do App code into target directory
+      git:
+        repo: 'https://github.com/emifly-devops/DevOps-Course-Starter.git'
+        dest: /opt/todo-app
+    - name: Install project dependencies using Poetry
+      command: /opt/poetry/bin/poetry install
+      environment:
+        POETRY_CACHE_DIR: /opt/poetry/.cache
+      args:
+        chdir: /opt/todo-app
+      become: yes
+    - name: Create .env file in To-Do App directory
+      template:
+        src: .env.j2
+        dest: /opt/todo-app/.env
+    - name: Copy To-Do App service files into system directory
+      copy:
+        src: "{{ item }}"
+        dest: /etc/systemd/system/
+      with_fileglob: "todo-app.*"
+      become: yes
+    - name: Start To-Do App service
+      systemd:
+        name: todo-app
+        state: restarted
+        daemon_reload: true
+      become: yes

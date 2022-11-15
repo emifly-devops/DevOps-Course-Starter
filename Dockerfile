@@ -1,6 +1,6 @@
 FROM python:3.10-slim-bullseye AS base
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y curl
 
 ENV POETRY_HOME=/opt/poetry

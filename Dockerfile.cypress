@@ -1,0 +1,9 @@
+FROM cypress/base:16.17.1
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY cypress.config.js ./
+COPY cypress cypress/
+
+ENTRYPOINT ["npm", "run", "test:cypress"]

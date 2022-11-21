@@ -39,6 +39,12 @@ To install Ansible, simply run the following in the terminal of the machine you 
 $ pip install ansible
 ```
 
+### Docker
+
+Various configurations have been provided for Docker if you wish to run the app or its associated tests in a container.
+To install Docker Desktop, follow the [installation steps on the website](https://www.docker.com/products/docker-desktop/).
+Ensure that it is running locally before attempting any of the Docker-specific instructions below.
+
 ## Dependencies
 
 The project uses a virtual environment to isolate package dependencies. To create the virtual environment and install required packages, run the following from your preferred shell:
@@ -99,6 +105,12 @@ Alternatively, if you have chosen to install Node, you can simply run the follow
 $ npm start
 ```
 
+If you have chosen to install Docker, you can run the following command instead:
+
+```bash
+$ docker compose up development --build
+```
+
 In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
 ## Running the App with a Production Configuration
@@ -111,7 +123,7 @@ $ vagrant up
 
 With this option, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app, as before.
 
-If you have chosen to install Ansible, run the following from your control node:
+If you have chosen to install Ansible, change the contents of the `inventory.ini` file to reflect your managed node's IP address and run the following from your control node:
 
 ```bash
 $ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
@@ -119,9 +131,18 @@ $ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
 
 You will be prompted to enter your Trello secret variables.
 With this option, visit the IP address of your managed node in your browser to view the app.
-Note that the app is only served over HTTP, not HTTPS.
+
+If you have chosen to install Docker, run the following to try out a production configuration locally:
+
+```bash
+$ docker compose up production --build
+```
+
+With this option, visit [`http://localhost:8080/`](http://localhost:8080/) in your web browser to view the app.
 
 ## Running the Tests
+
+### Unit and Integration Tests with Pytest
 
 Use the following command to run the unit and integration tests associated with the app:
 
@@ -135,8 +156,24 @@ Alternatively, if you have chosen to install Node, you may run the following ins
 $ npm run test:pytest
 ```
 
+To run these tests in a container using Docker, use the following command instead:
+
+```bash
+$ docker compose up test --build
+```
+
+### End-to-end Tests with Cypress
+
 This project uses Cypress for some basic end-to-end testing. To run these tests, you will need to first start the app, and then use the following command:
 
 ```bash
 $ npm run test:cypress
 ```
+
+To run these tests in a container using Docker, use the following command instead:
+
+```bash
+$ docker compose up test-e2e --build --abort-on-container-exit
+```
+
+In this case, there is no need to manually start the app - Docker will take care of this for us as well as automatically tearing it down when the tests are complete.

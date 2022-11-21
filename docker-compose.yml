@@ -19,3 +19,16 @@ services:
       - "5000:5000"
     volumes:
       - ./todo_app:/opt/todo-app/todo_app
+  test:
+    build:
+      context: .
+      target: test
+    env_file:
+      - .env.test
+  test-e2e:
+    build:
+      context: .
+      dockerfile: Dockerfile.cypress
+    depends_on:
+      - development
+    network_mode: "host"

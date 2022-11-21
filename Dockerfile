@@ -14,12 +14,21 @@ RUN poetry install
 
 COPY todo_app todo_app/
 
+
 FROM base AS production
 
-ENTRYPOINT poetry run gunicorn --bind 0.0.0.0:80 'todo_app.app:create_app()'
+ENTRYPOINT ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:80", "todo_app.app:create_app()"]
 EXPOSE 80
+
 
 FROM base AS development
 
-ENTRYPOINT poetry run flask run --host 0.0.0.0
+ENTRYPOINT ["poetry", "run", "flask", "run", "--host", "0.0.0.0"]
 EXPOSE 5000
+
+
+FROM base AS test
+
+COPY tests tests/
+
+ENTRYPOINT ["poetry", "run", "pytest"]

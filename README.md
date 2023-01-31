@@ -159,7 +159,7 @@ $ npm run test:pytest
 To run these tests in a container using Docker, use the following command instead:
 
 ```bash
-$ docker compose up test --build
+$ docker compose --file docker-compose.pytest.yml up pytest --build
 ```
 
 ### End-to-end Tests with Cypress
@@ -173,7 +173,7 @@ $ npm run test:cypress
 To run these tests in a container using Docker, use the following command instead:
 
 ```bash
-$ docker compose up test-e2e --build --abort-on-container-exit
+$ docker compose up cypress --build --abort-on-container-exit
 ```
 
 In this case, there is no need to manually start the app - Docker will take care of this for us as well as automatically tearing it down when the tests are complete.

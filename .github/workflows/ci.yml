@@ -12,21 +12,24 @@ jobs:
     name: Build project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: |
+      - uses: actions/checkout@v3
+      - name: Set environment variables and build project
+        run: |
           echo "${{ secrets.ENV_FILE }}" > .env
           docker compose build production
   pytest:
     name: Run Pytest tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: docker compose --file docker-compose.pytest.yml up pytest --build
+      - uses: actions/checkout@v3
+      - name: Run Pytest tests
+        run: docker compose --file docker-compose.pytest.yml up pytest --build
   cypress:
     name: Run Cypress tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: |
+      - uses: actions/checkout@v3
+      - name: Set environment variables and run Cypress tests
+        run: |
           echo "${{ secrets.ENV_FILE }}" > .env
           docker compose up cypress --build --abort-on-container-exit

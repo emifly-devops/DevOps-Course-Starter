@@ -182,5 +182,5 @@ In this case, there is no need to manually start the app - Docker will take care
 
 ### GitHub Actions
 
-A workflow file called `ci.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
+A workflow file called `ci-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
 In order to get this working with a fork of the repository, it should just be necessary to create a repository secret called `ENV_FILE` and paste in the contents of your `.env` file.

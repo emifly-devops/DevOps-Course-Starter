@@ -181,6 +181,53 @@ $ docker compose up cypress --build --abort-on-container-exit
 
 In this case, there is no need to manually start the app - Docker will take care of this for us as well as automatically tearing it down when the tests are complete.
 
+## Deployment with Docker and Azure
+
+If you wish to host your app's container images using the Docker Hub, you will need to [set up a Docker Hub account](https://hub.docker.com/signup).
+Once you have done so, create a public repository called `todo-app`.
+There is also a Docker variable that needs to be set in your `.env` file:
+
+```dotenv
+DOCKERHUB_USERNAME
+```
+
+Enter the username you chose when you signed up to the Docker Hub.
+
+To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal:
+
+```bash
+docker login
+docker compose build production
+docker compose push production
+```
+
+It is necessary to do this before configuring your Azure App Service app (detailed below).
+
+To set up an Azure account, first ensure you have a Microsoft account, and then visit the [Azure Portal](https://portal.azure.com) and use this Microsoft account to register.
+Once you have done this, you will also need to create a subscription - this is achieved by clicking the Subscriptions blade under Azure services and then clicking Add.
+Next, within this subscription, create a resource group by choosing the Resource groups blade, again under Azure services, and then clicking Create.
+
+To create an Azure App Service resource for your app, you will need to run the following commands from a Bash shell, setting the environment variables to appropriate values:
+
+```bash
+export RESOURCE_GROUP_NAME=...
+export APPSERVICE_PLAN_NAME=...
+export WEBAPP_NAME=...
+export DOCKERHUB_USERNAME=...
+az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
+az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
+az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
+```
+
+Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name and web app name, with the latter needing to be globally unique within Azure.
+
+To refresh your app when you push a new version of your image to the Docker Hub, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
+One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
+
+```bash
+curl -dH -X POST "..."
+```
+
 ## Pipelines
 
 ### GitHub Actions

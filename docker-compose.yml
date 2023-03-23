@@ -5,6 +5,7 @@ services:
     build:
       context: .
       target: production
+    image: ${DOCKERHUB_USERNAME}/todo-app:latest
     env_file:
       - .env
     ports:

@@ -201,7 +201,7 @@ docker compose build production
 docker compose push production
 ```
 
-It is necessary to do this before configuring your Azure App Service app (detailed below).
+It is necessary to do this once before configuring your Azure App Service app (detailed below). However, future pushes will be automated.
 
 To set up an Azure account, first ensure you have a Microsoft account, and then visit the [Azure Portal](https://portal.azure.com) and use this Microsoft account to register.
 Once you have done this, you will also need to create a subscription - this is achieved by clicking the Subscriptions blade under Azure services and then clicking Add.
@@ -221,7 +221,7 @@ az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --setti
 
 Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name and web app name, with the latter needing to be globally unique within Azure.
 
-To refresh your app when you push a new version of your image to the Docker Hub, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
+To refresh your app if you ever push a new version of your image to the Docker Hub manually, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 
 ```bash
@@ -232,5 +232,24 @@ curl -dH -X POST "..."
 
 ### GitHub Actions
 
-A workflow file called `ci-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
-In order to get this working with a fork of the repository, it should just be necessary to create a repository secret called `ENV_FILE` and paste in the contents of your `.env` file.
+A workflow file called `ci-cd-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
+Upon successful validation of the changes, it is also configured to build and push a Docker image to the Docker Hub, and use this new image as the basis for an Azure web app.
+In order to get this working with a fork of the repository, it should be necessary to create three GitHub Actions secrets:
+
+```dotenv
+ENV_FILE
+```
+
+This should just be the contents of your `.env` file.
+
+```dotenv
+DOCKERHUB_TOKEN
+```
+
+This token should be obtained via the settings page of your Docker Hub account.
+
+```dotenv
+AZURE_APP_WEBHOOK_URL
+```
+
+This is the webhook URL from the Deployment Center blade of your web app resource in the Azure portal.

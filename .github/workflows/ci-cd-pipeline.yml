@@ -43,7 +43,7 @@ jobs:
       - build
       - pytest
       - cypress
-    if: ${{ github.event_name == 'push' && github.ref_name == 'exercise-9' }}
+    if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -61,3 +61,10 @@ jobs:
         run: docker compose build production
       - name: Push Docker image
         run: docker compose push production
+  azure:
+    name: Refresh Azure app to pull from latest available Docker image
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make post request to Azure app webhook URL
+        run: curl -dH -X POST "${{ secrets.AZURE_APP_WEBHOOK_URL }}"

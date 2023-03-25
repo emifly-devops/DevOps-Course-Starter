@@ -76,16 +76,19 @@ Here is how each of these can be obtained:
 ```dotenv
 TRELLO_KEY
 ```
+
 Your personal Trello app key can be found at the top of the [developer API keys page](https://trello.com/app-key) when signed in.
 
 ```dotenv
 TRELLO_TOKEN
 ```
+
 On the same page, just below your personal Trello app key, there is a link to manually generate a token. Follow the steps to obtain a token.
 
 ```dotenv
 TRELLO_BOARD_ID
 ```
+
 A suitable board ID can be obtained from the URL of the board you created after signing up.
 The URL will be of the form `https://trello.com/b/<board ID>/<board name>`.
 

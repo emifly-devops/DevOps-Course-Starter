@@ -221,6 +221,8 @@ az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --setti
 
 Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name and web app name, with the latter needing to be globally unique within Azure.
 
+You should be able to view your deployed web app at [https://$WEBAPP_NAME.azurewebsites.net/]().
+
 To refresh your app when you push a new version of your image to the Docker Hub, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 

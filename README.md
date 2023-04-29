@@ -66,11 +66,11 @@ $ cp .env.template .env  # (first time only)
 ```
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change).
-There are also some Trello variables that need to be set, which are detailed below.
+There are also some Trello secrets that need to be set, which are detailed below.
 
 ## Trello
 
-You will need to [set up a Trello account](https://trello.com/signup) and create a new board in order to run this project. Once you have done so, there are three Trello variables that need to be set in your `.env` file.
+You will need to [set up a Trello account](https://trello.com/signup) and create a new board in order to run this project. Once you have done so, there are three Trello secrets that need to be set in your `.env` file.
 Here is how each of these can be obtained:
 
 ```dotenv
@@ -111,7 +111,7 @@ $ npm start
 If you have chosen to install Docker, you can run the following command instead:
 
 ```bash
-$ docker compose up development --build
+$ docker compose --file docker-compose.development.yml up development --build
 ```
 
 In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
@@ -132,7 +132,7 @@ If you have chosen to install Ansible, change the contents of the `inventory.ini
 $ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
 ```
 
-You will be prompted to enter your Trello secret variables.
+You will be prompted to enter your Trello secrets.
 With this option, visit the IP address of your managed node in your browser to view the app.
 
 If you have chosen to install Docker, run the following to try out a production configuration locally:
@@ -185,7 +185,7 @@ In this case, there is no need to manually start the app - Docker will take care
 
 If you wish to host your app's container images using the Docker Hub, you will need to [set up a Docker Hub account](https://hub.docker.com/signup).
 Once you have done so, create a public repository called `todo-app`.
-There is also a Docker variable that needs to be set in your `.env` file:
+There is also a Docker configuration value that needs to be set in your `.env` file:
 
 ```dotenv
 DOCKERHUB_USERNAME
@@ -201,7 +201,7 @@ docker compose build production
 docker compose push production
 ```
 
-It is necessary to do this before configuring your Azure App Service app (detailed below).
+It is necessary to do this once before configuring your Azure App Service app (detailed below). However, future pushes will be automated.
 
 To set up an Azure account, first ensure you have a Microsoft account, and then visit the [Azure Portal](https://portal.azure.com) and use this Microsoft account to register.
 Once you have done this, you will also need to create a subscription - this is achieved by clicking the Subscriptions blade under Azure services and then clicking Add.
@@ -223,7 +223,7 @@ Note that you should use the resource group name and Docker Hub username you cre
 
 You should be able to view your deployed web app at [https://$WEBAPP_NAME.azurewebsites.net/]().
 
-To refresh your app when you push a new version of your image to the Docker Hub, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
+To refresh your app if you ever push a new version of your image to the Docker Hub manually, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 
 ```bash
@@ -234,5 +234,42 @@ curl -dH -X POST "..."
 
 ### GitHub Actions
 
-A workflow file called `ci-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
-In order to get this working with a fork of the repository, it should just be necessary to create a repository secret called `ENV_FILE` and paste in the contents of your `.env` file.
+A workflow file called `ci-cd-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
+Upon successful validation of the changes, it is also configured to build and push a Docker image to the Docker Hub, and use this new image as the basis for an Azure web app.
+In order to get this working with a fork of the repository, it should be necessary to create the following GitHub Actions secrets:
+
+```dotenv
+TRELLO_KEY
+```
+
+This should be the same as the Trello key that you saved in your `.env` file.
+
+```dotenv
+TRELLO_TOKEN
+```
+
+This should be the same as the Trello token that you saved in your `.env` file.
+
+```dotenv
+TRELLO_BOARD_ID
+```
+
+This should be the same as the Trello board ID that you saved in your `.env` file.
+
+```dotenv
+DOCKERHUB_USERNAME
+```
+
+This should be the username you used to create your Docker Hub account.
+
+```dotenv
+DOCKERHUB_TOKEN
+```
+
+This token should be obtained via the settings page of your Docker Hub account.
+
+```dotenv
+AZURE_APP_WEBHOOK_URL
+```
+
+This is the webhook URL from the Deployment Center blade of your web app resource in the Azure portal.

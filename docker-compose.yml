@@ -6,24 +6,16 @@ services:
       context: .
       target: production
     image: ${DOCKERHUB_USERNAME}/todo-app:latest
-    env_file:
-      - .env
+    environment:
+      TRELLO_KEY: ${TRELLO_KEY}
+      TRELLO_TOKEN: ${TRELLO_TOKEN}
+      TRELLO_BOARD_ID: ${TRELLO_BOARD_ID}
     ports:
       - "8080:80"
-  development:
-    build:
-      context: .
-      target: development
-    env_file:
-      - .env
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./todo_app:/opt/todo-app/todo_app
   cypress:
     build:
       context: .
       dockerfile: Dockerfile.cypress
     depends_on:
-      - development
+      - production
     network_mode: "host"

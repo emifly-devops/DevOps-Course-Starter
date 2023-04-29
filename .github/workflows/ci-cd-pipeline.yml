@@ -1,0 +1,76 @@
+name: CI pipeline
+on:
+  push:
+    paths-ignore:
+      - README.md
+  pull_request:
+    paths-ignore:
+      - README.md
+jobs:
+  build:
+    name: Build project
+    runs-on: ubuntu-latest
+    env:
+      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
+      DOCKERHUB_USERNAME: dummy-dockerhub-username
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: build project
+        run: docker compose build production
+  pytest:
+    name: Run Pytest tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Pytest tests
+        run: docker compose --file docker-compose.pytest.yml up pytest --build
+  cypress:
+    name: Run Cypress tests
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
+      DOCKERHUB_USERNAME: dummy-dockerhub-username
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Cypress tests
+        run: docker compose up cypress --build --abort-on-container-exit
+  docker:
+    name: Publish to Docker Hub
+    needs:
+      - pytest
+      - cypress
+    if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+    runs-on: ubuntu-latest
+    env:
+      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build Docker image
+        run: docker compose build production
+      - name: Push Docker image
+        run: docker compose push production
+  azure:
+    name: Refresh Azure app to pull from latest available Docker image
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make post request to Azure app webhook URL
+        run: curl -f -X POST '${{ secrets.AZURE_APP_WEBHOOK_URL }}'

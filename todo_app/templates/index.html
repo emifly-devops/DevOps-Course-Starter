@@ -24,7 +24,7 @@
 
     {% if view_model.items|length > 0 %}
       {% for status in view_model.item_status_data %}
-        {% if view_model.get_items_with_status(status) %}
+        {% if view_model.get_items_with_status(status)|length > 0 %}
           <div class="row my-4">
             <div class="col-md-12">
               <h2>{{ status }} Items</h2>

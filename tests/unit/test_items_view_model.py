@@ -1,7 +1,7 @@
 import pytest
 
 from todo_app.models.data.item import Item
-from todo_app.models.view.items import ItemsViewModel
+from todo_app.models.view.items_view_model import ItemsViewModel
 
 
 @pytest.fixture

@@ -108,12 +108,6 @@ Alternatively, if you have chosen to install Node, you can simply run the follow
 $ npm start
 ```
 
-If you have chosen to install Docker, you can run the following command instead:
-
-```bash
-$ docker compose --file docker-compose.development.yml up development --build
-```
-
 In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
 ## Running the App with a Production Configuration
@@ -176,7 +170,7 @@ $ npm run test:cypress
 To run these tests in a container using Docker, use the following command instead:
 
 ```bash
-$ docker compose up cypress --build --abort-on-container-exit
+$ docker compose --file docker-compose.cypress.yml up cypress --build --abort-on-container-exit
 ```
 
 In this case, there is no need to manually start the app - Docker will take care of this for us as well as automatically tearing it down when the tests are complete.
@@ -196,9 +190,9 @@ Enter the username you chose when you signed up to the Docker Hub.
 To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal:
 
 ```bash
-docker login
-docker compose build production
-docker compose push production
+$ docker login
+$ docker compose build production
+$ docker compose push production
 ```
 
 It is necessary to do this once before configuring your Azure App Service app (detailed below). However, future pushes will be automated.
@@ -210,13 +204,13 @@ Next, within this subscription, create a resource group by choosing the Resource
 To create an Azure App Service resource for your app, you will need to run the following commands from a Bash shell, setting the environment variables to appropriate values:
 
 ```bash
-export RESOURCE_GROUP_NAME=...
-export APPSERVICE_PLAN_NAME=...
-export WEBAPP_NAME=...
-export DOCKERHUB_USERNAME=...
-az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
-az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
-az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
+$ export RESOURCE_GROUP_NAME=...
+$ export APPSERVICE_PLAN_NAME=...
+$ export WEBAPP_NAME=...
+$ export DOCKERHUB_USERNAME=...
+$ az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
+$ az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
+$ az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
 ```
 
 Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name and web app name, with the latter needing to be globally unique within Azure.
@@ -227,7 +221,7 @@ To refresh your app if you ever push a new version of your image to the Docker H
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 
 ```bash
-curl -dH -X POST "..."
+$ curl -f -X POST "..."
 ```
 
 ## Pipelines
@@ -239,22 +233,10 @@ Upon successful validation of the changes, it is also configured to build and pu
 In order to get this working with a fork of the repository, it should be necessary to create the following GitHub Actions secrets:
 
 ```dotenv
-TRELLO_KEY
+MONGO_URI
 ```
 
-This should be the same as the Trello key that you saved in your `.env` file.
-
-```dotenv
-TRELLO_TOKEN
-```
-
-This should be the same as the Trello token that you saved in your `.env` file.
-
-```dotenv
-TRELLO_BOARD_ID
-```
-
-This should be the same as the Trello board ID that you saved in your `.env` file.
+This should be the same as the Mongo URI that you saved in your `.env` file.
 
 ```dotenv
 DOCKERHUB_USERNAME

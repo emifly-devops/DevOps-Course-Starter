@@ -1,4 +1,4 @@
-name: CI pipeline
+name: CI/CD pipeline
 on:
   push:
     paths-ignore:
@@ -11,19 +11,18 @@ jobs:
     name: Build project
     runs-on: ubuntu-latest
     env:
-      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
-      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
-      TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
-      DOCKERHUB_USERNAME: dummy-dockerhub-username
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: build project
+      - name: Build project
         run: docker compose build production
   pytest:
     name: Run Pytest tests
     needs: build
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,15 +33,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env:
-      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
-      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
-      TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
-      DOCKERHUB_USERNAME: dummy-dockerhub-username
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run Cypress tests
-        run: docker compose up cypress --build --abort-on-container-exit
+        run: docker compose --file docker-compose.cypress.yml up cypress --build --abort-on-container-exit
   docker:
     name: Publish to Docker Hub
     needs:
@@ -51,9 +47,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     env:
-      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
-      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
-      TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
@@ -61,7 +55,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build Docker image
         run: docker compose build production

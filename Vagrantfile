@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
     trigger.run_remote = {privileged: false, inline: "
       cd /vagrant
 
-      export $(cat .env | grep '^TRELLO' | xargs)
+      export $(cat .env | grep -v '^#' | xargs)
 
       npm install
       poetry install

@@ -1,7 +1,5 @@
 from bson.objectid import ObjectId
 
-from pymongo.errors import PyMongoError
-
 from todo_app.models.data.item import Item
 
 
@@ -17,10 +15,7 @@ class ItemRepo:
         Returns:
             items: The list of saved items.
         """
-        try:
-            return [Item.from_mongo_item(item) for item in self.context.todo_app.items.find()]
-        except PyMongoError:
-            pass
+        return [Item.from_mongo_item(item) for item in self.context.todo_app.items.find()]
 
     def create(self, title):
         """
@@ -29,10 +24,7 @@ class ItemRepo:
         Args:
             title: The title of the item to create.
         """
-        try:
-            self.context.todo_app.items.insert_one(Item(title).to_mongo_item())
-        except PyMongoError:
-            pass
+        self.context.todo_app.items.insert_one(Item(title).to_mongo_item())
 
     def update(self, id, changes):
         """
@@ -43,16 +35,13 @@ class ItemRepo:
             id: The ID of the item to update.
             changes: Any changes to apply to the item.
         """
-        try:
-            self.context.todo_app.items.update_one(
-                {'_id': ObjectId(id)},
-                {'$set': {
-                    property: changes[property]
-                    for property in {'title', 'description', 'status'}.intersection(changes)
-                }}
-            )
-        except PyMongoError:
-            pass
+        self.context.todo_app.items.update_one(
+            {'_id': ObjectId(id)},
+            {'$set': {
+                property: changes[property]
+                for property in {'title', 'description', 'status'}.intersection(changes)
+            }}
+        )
 
     def delete(self, id):
         """
@@ -62,7 +51,4 @@ class ItemRepo:
         Args:
             id: The ID of the item to delete.
         """
-        try:
-            self.context.todo_app.items.delete_one({'_id': ObjectId(id)})
-        except PyMongoError:
-            pass
+        self.context.todo_app.items.delete_one({'_id': ObjectId(id)})

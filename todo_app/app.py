@@ -1,8 +1,9 @@
 import os
 
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, flash
 from werkzeug.routing import BaseConverter
 import pymongo
+from pymongo.errors import PyMongoError
 from dotenv import find_dotenv, load_dotenv
 
 from todo_app.flask_config import Config
@@ -27,7 +28,11 @@ def create_app():
 
     @app.route('/')
     def index():
-        items = item_repo.get_all()
+        try:
+            items = item_repo.get_all()
+        except PyMongoError:
+            items = None
+            flash("Unable to retrieve items at this time. Please try again later.")
         items_view_model = ItemsViewModel(items)
         return render_template('index.html', view_model=items_view_model)
 
@@ -35,17 +40,26 @@ def create_app():
     def create_item():
         title = request.form.get('title')
         if title is not None:
-            item_repo.create(title)
+            try:
+                item_repo.create(title)
+            except PyMongoError:
+                flash("Unable to create item at this time. Please try again later.")
         return redirect('/')
 
     @app.route('/update/<item_id:item_id>', methods=['POST'])
     def update_item(item_id):
-        item_repo.update(item_id, request.form)
+        try:
+            item_repo.update(item_id, request.form)
+        except PyMongoError:
+            flash("Unable to update item at this time. Please try again later.")
         return redirect('/')
 
     @app.route('/delete/<item_id:item_id>', methods=['POST'])
     def delete_item(item_id):
-        item_repo.delete(item_id)
+        try:
+            item_repo.delete(item_id)
+        except PyMongoError:
+            flash("Unable to delete item at this time. Please try again later.")
         return redirect('/')
 
     return app

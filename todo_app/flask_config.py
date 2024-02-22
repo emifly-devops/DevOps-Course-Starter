@@ -5,6 +5,7 @@ class Config:
 
     def __init__(self):
         config_vars = [
+            'SECRET_KEY',
             'MONGO_URI',
         ]
         for config_var in config_vars:

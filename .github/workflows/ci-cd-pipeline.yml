@@ -47,7 +47,6 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     env:
-      MONGO_URI: ${{ secrets.MONGO_URI }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout

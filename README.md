@@ -219,7 +219,7 @@ To refresh your app when you push a new version of your image to the Docker Hub 
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 
 ```bash
-$ curl -f -X POST "..."
+$ curl -f -X POST '...'  # (Single quotation marks important here)
 ```
 
 ## Pipelines

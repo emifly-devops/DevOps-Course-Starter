@@ -63,19 +63,16 @@ You'll also need to clone a new `.env` file from the `.env.template` to store lo
 $ cp .env.template .env  # (first time only)
 ```
 
-There are three values that need to be set:
+There are two values that need to be set:
 
 ```dotenv
 SECRET_KEY=secret-key
 MONGO_URI=mongo-uri
-DOCKERHUB_USERNAME=dockerhub-username
 ```
 
 The `SECRET_KEY` setting is used to secure the Flask session. You should generate a random sequence of characters to use for this setting.
 
 The `MONGO_URI` setting is used to provide connection details for the MongoDB instance being used in production. This should be set to the primary connection string of a suitable Azure CosmosDB account. (See instructions for setting this up in the [Deployment with Docker and Azure](#Deployment-with-Docker-and-Azure) section below.)
-
-The `DOCKERHUB_USERNAME` setting is used to push images to the Docker Hub. This should be set to the username of a suitable Docker Hub account. (Once again, see instructions for setting this up in the [Deployment with Docker and Azure](#Deployment-with-Docker-and-Azure) section below.)
 
 ## Running the App with a Development Configuration
 
@@ -163,11 +160,10 @@ In this case, there is no need to manually start the app - Docker will take care
 If you wish to host your app's container images using the Docker Hub, you will need to [set up a Docker Hub account](https://hub.docker.com/signup).
 Once you have done so, create a public repository called `todo-app`.
 
-You will also need to copy your username into your `.env` file, using it as the value for the `DOCKERHUB_USERNAME` setting.
-
-To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal:
+To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal, using the Docker Hub username you created previously:
 
 ```bash
+$ EXPORT DOCKERHUB_USERNAME=...
 $ docker login
 $ docker compose build production
 $ docker compose push production

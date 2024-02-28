@@ -2,20 +2,18 @@
 
 ## System Requirements
 
-The project uses Poetry for Python to create an isolated environment and manage package dependencies.
-To prepare your system, ensure you have an official distribution of Python version 3.7+ and install Poetry using one of the following commands (as instructed by the [poetry documentation](https://python-poetry.org/docs/#system-requirements)):
+## Python and Poetry
 
-### Poetry Installation (Bash)
+The project uses Poetry for Python to create an isolated environment and manage package dependencies.
+To prepare your system, ensure you have an official distribution of Python version 3.7+ and install Poetry using the following command:
 
 ```bash
 $ curl -sSL https://install.python-poetry.org | python -
 ```
 
-### Poetry Installation (PowerShell)
+### MongoDB
 
-```powershell
-PS> (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
-```
+MongoDB is used as the project database. To install the Community Edition locally, follow the instructions on the [MongoDB website](https://www.mongodb.com/docs/manual/administration/install-community/).
 
 ## Optional Installations
 
@@ -65,34 +63,16 @@ You'll also need to clone a new `.env` file from the `.env.template` to store lo
 $ cp .env.template .env  # (first time only)
 ```
 
-The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change).
-There are also some Trello secrets that need to be set, which are detailed below.
-
-## Trello
-
-You will need to [set up a Trello account](https://trello.com/signup) and create a new board in order to run this project. Once you have done so, there are three Trello secrets that need to be set in your `.env` file.
-Here is how each of these can be obtained:
+There are two values that need to be set:
 
 ```dotenv
-TRELLO_KEY
+SECRET_KEY=secret-key
+MONGO_URI=mongo-uri
 ```
 
-Your personal Trello app key can be found at the top of the [developer API keys page](https://trello.com/app-key) when signed in.
+The `SECRET_KEY` setting is used to secure the Flask session. You should generate a random sequence of characters to use for this setting.
 
-```dotenv
-TRELLO_TOKEN
-```
-
-On the same page, just below your personal Trello app key, there is a link to manually generate a token. Follow the steps to obtain a token.
-
-```dotenv
-TRELLO_BOARD_ID
-```
-
-A suitable board ID can be obtained from the URL of the board you created after signing up.
-The URL will be of the form `https://trello.com/b/<board ID>/<board name>`.
-
-For example, if your board URL is `https://trello.com/b/12345678/to-do-board`, your board ID will be `12345678`.
+The `MONGO_URI` setting is used to provide connection details for the MongoDB instance being used in production. This should be set to the primary connection string of a suitable Azure CosmosDB account. (See instructions for setting this up in the [Deployment with Docker and Azure](#Deployment-with-Docker-and-Azure) section below.)
 
 ## Running the App with a Development Configuration
 
@@ -106,12 +86,6 @@ Alternatively, if you have chosen to install Node, you can simply run the follow
 
 ```bash
 $ npm start
-```
-
-If you have chosen to install Docker, you can run the following command instead:
-
-```bash
-$ docker compose --file docker-compose.development.yml up development --build
 ```
 
 In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
@@ -132,7 +106,7 @@ If you have chosen to install Ansible, change the contents of the `inventory.ini
 $ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
 ```
 
-You will be prompted to enter your Trello secrets.
+You will be prompted to enter two secrets: your Flask secret key and your Mongo URI. You should use the same values that you have stored in your `.env` file.
 With this option, visit the IP address of your managed node in your browser to view the app.
 
 If you have chosen to install Docker, run the following to try out a production configuration locally:
@@ -176,7 +150,7 @@ $ npm run test:cypress
 To run these tests in a container using Docker, use the following command instead:
 
 ```bash
-$ docker compose up cypress --build --abort-on-container-exit
+$ docker compose --file docker-compose.cypress.yml up cypress --build --abort-on-container-exit
 ```
 
 In this case, there is no need to manually start the app - Docker will take care of this for us as well as automatically tearing it down when the tests are complete.
@@ -185,49 +159,67 @@ In this case, there is no need to manually start the app - Docker will take care
 
 If you wish to host your app's container images using the Docker Hub, you will need to [set up a Docker Hub account](https://hub.docker.com/signup).
 Once you have done so, create a public repository called `todo-app`.
-There is also a Docker configuration value that needs to be set in your `.env` file:
 
-```dotenv
-DOCKERHUB_USERNAME
-```
-
-Enter the username you chose when you signed up to the Docker Hub.
-
-To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal:
+To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal, using the Docker Hub username you created previously:
 
 ```bash
-docker login
-docker compose build production
-docker compose push production
+$ EXPORT DOCKERHUB_USERNAME=...
+$ docker login
+$ docker compose build production
+$ docker compose push production
 ```
-
-It is necessary to do this once before configuring your Azure App Service app (detailed below). However, future pushes will be automated.
 
 To set up an Azure account, first ensure you have a Microsoft account, and then visit the [Azure Portal](https://portal.azure.com) and use this Microsoft account to register.
 Once you have done this, you will also need to create a subscription - this is achieved by clicking the Subscriptions blade under Azure services and then clicking Add.
 Next, within this subscription, create a resource group by choosing the Resource groups blade, again under Azure services, and then clicking Create.
-
-To create an Azure App Service resource for your app, you will need to run the following commands from a Bash shell, setting the environment variables to appropriate values:
+Finally, to log in to your new account locally, run the following command and follow the ensuing steps:
 
 ```bash
-export RESOURCE_GROUP_NAME=...
-export APPSERVICE_PLAN_NAME=...
-export WEBAPP_NAME=...
-export DOCKERHUB_USERNAME=...
-az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
-az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
-az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
+$ az login
 ```
 
-Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name and web app name, with the latter needing to be globally unique within Azure.
+To create Azure App Service and Azure CosmosDB resources for your app, you will need to run the following commands from a Bash shell, setting the environment variables to appropriate values:
 
-You should be able to view your deployed web app at [https://$WEBAPP_NAME.azurewebsites.net/]().
+```bash
+$ export RESOURCE_GROUP_NAME=...
+$ export APPSERVICE_PLAN_NAME=...
+$ export WEBAPP_NAME=...
+$ export DOCKERHUB_USERNAME=...
+$ export COSMOS_ACCOUNT_NAME=...
+$ az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
+$ az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
+$ az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
+$ az cosmosdb create --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --kind MongoDB --capabilities EnableServerless --server-version 4.2
+$ az cosmosdb mongodb database create --account-name $COSMOS_ACCOUNT_NAME --name todo_app --resource-group $RESOURCE_GROUP_NAME
+```
 
-To refresh your app if you ever push a new version of your image to the Docker Hub manually, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
+Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name, web app name and CosmosDB account name, with the web app name needing to be globally unique within Azure.
+
+Once you have done this, retrieve the primary connection string for your CosmosDB account by running the following command, ensuring that your environment variables from the previous set of commands are still set:
+
+```bash
+$ az cosmosdb keys list --type connection-strings --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME
+```
+
+Copy the primary connection string into your `.env` file, using it as the value for the `MONGO_URI` setting.
+
+Finally, run the following commands to set environment variables for your app:
+
+```bash
+$ export SECRET_KEY=...
+$ export MONGO_URI=...
+$ az webapp config appsettings set --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME --settings SECRET_KEY=$SECRET_KEY MONGO_URI=$MONGO_URI
+```
+
+You should use the same values for `SECRET_KEY` and `MONGO_URI` that you saved in your `.env` file.
+
+Your deployed web app will be at [https://$WEBAPP_NAME.azurewebsites.net/]() in due course.
+
+To refresh your app when you push a new version of your image to the Docker Hub manually, send a post request to your app's webhook URL, which you can find by looking in the Deployment Center blade of your resource in the Azure portal.
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 
 ```bash
-curl -dH -X POST "..."
+$ curl -f -X POST '...'  # (Single quotation marks important here)
 ```
 
 ## Pipelines
@@ -237,24 +229,6 @@ curl -dH -X POST "..."
 A workflow file called `ci-cd-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
 Upon successful validation of the changes, it is also configured to build and push a Docker image to the Docker Hub, and use this new image as the basis for an Azure web app.
 In order to get this working with a fork of the repository, it should be necessary to create the following GitHub Actions secrets:
-
-```dotenv
-TRELLO_KEY
-```
-
-This should be the same as the Trello key that you saved in your `.env` file.
-
-```dotenv
-TRELLO_TOKEN
-```
-
-This should be the same as the Trello token that you saved in your `.env` file.
-
-```dotenv
-TRELLO_BOARD_ID
-```
-
-This should be the same as the Trello board ID that you saved in your `.env` file.
 
 ```dotenv
 DOCKERHUB_USERNAME

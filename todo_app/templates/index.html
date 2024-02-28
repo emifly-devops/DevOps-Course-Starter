@@ -7,6 +7,19 @@
     <p class="lead">Just another to-do app.</p>
   </div>
 
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-dismissible alert-danger mb-4">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   {% if view_model.items is not none %}
     <div class="row">
       <div class="col-md-12">
@@ -24,7 +37,7 @@
 
     {% if view_model.items|length > 0 %}
       {% for status in view_model.item_status_data %}
-        {% if view_model.get_items_with_status(status) %}
+        {% if view_model.get_items_with_status(status)|length > 0 %}
           <div class="row my-4">
             <div class="col-md-12">
               <h2>{{ status }} Items</h2>
@@ -126,7 +139,5 @@
         <p class="lead">No items yet.</p>
       </div>
     {% endif %}
-  {% else %}
-    <p class="lead text-center">Unable to retrieve items. Please try again later.</p>
   {% endif %}
 {% endblock %}

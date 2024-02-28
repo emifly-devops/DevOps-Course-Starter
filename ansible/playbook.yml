@@ -2,12 +2,10 @@
   hosts: webservers
   remote_user: ec2-user
   vars_prompt:
-    - name: trello_key
-      prompt: Please enter your Trello API key
-    - name: trello_token
-      prompt: Please enter your Trello app token
-    - name: trello_board_id
-      prompt: Please enter your Trello board ID
+    - name: secret_key
+      prompt: Please enter your Flask secret key
+    - name: mongo_uri
+      prompt: Please enter your Mongo URI
   tasks:
     - name: Create non-privileged todo-app user
       user:

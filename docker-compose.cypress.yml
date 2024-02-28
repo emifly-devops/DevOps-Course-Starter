@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+  development:
+    build:
+      context: .
+      target: development
+    depends_on:
+      - mongo
+    env_file:
+      - .flaskenv
+      - .env.devtest
+    environment:
+      MONGO_URI: mongodb://mongo:27017/
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./todo_app:/opt/todo-app/todo_app
+  cypress:
+    build:
+      context: .
+      dockerfile: Dockerfile.cypress
+    depends_on:
+      - development
+    network_mode: "host"

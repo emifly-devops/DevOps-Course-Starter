@@ -1,6 +1,3 @@
-from todo_app.helpers.trello_helpers import get_list_id_from_name, get_list_name_from_id
-
-
 class Item:
 
     def __init__(self, title, description='', status='To Do', id=None):
@@ -10,18 +7,17 @@ class Item:
         self.id = id
 
     @classmethod
-    def from_trello_card(cls, card):
+    def from_mongo_item(cls, item):
         return cls(
-            title=card['name'],
-            description=card['desc'],
-            status=get_list_name_from_id(card['idList']),
-            id=card['id'],
+            title=item['title'],
+            description=item['description'],
+            status=item['status'],
+            id=item['_id'],
         )
 
-    def to_trello_card(self):
+    def to_mongo_item(self):
         return {
-            'name': self.title,
-            'desc': self.description,
-            'idList': get_list_id_from_name(self.status),
-            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'status': self.status,
         }

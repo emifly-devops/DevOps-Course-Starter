@@ -13,6 +13,7 @@
   "homepage": "https://github.com/emifly-devops/DevOps-Course-Starter#readme",
   "devDependencies": {
     "cypress": "^13.6.6",
+    "dotenv": "^16.4.5",
     "totp-generator": "^1.0.0"
   }
 }

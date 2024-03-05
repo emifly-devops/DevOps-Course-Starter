@@ -13,7 +13,8 @@ services:
       - mongo
     env_file:
       - .flaskenv
-      - .env.devtest
+      - .env
+      - .env.public
     environment:
       MONGO_URI: mongodb://mongo:27017/
     ports:

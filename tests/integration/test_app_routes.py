@@ -1,10 +1,13 @@
 import os
 from bson.objectid import ObjectId
 
+from flask_dance.consumer.storage import MemoryStorage
 import pytest
 import pymongo
 import mongomock
 from dotenv import find_dotenv, load_dotenv
+
+from todo_app.blueprints.oauth import oauth_blueprint
 
 test_mongo_to_do_item = {
     '_id': ObjectId('1d28f892a5408afb535797e0'),
@@ -48,9 +51,12 @@ def single(iterator):
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
     flaskenv_file_path = find_dotenv('.flaskenv.test')
     load_dotenv(flaskenv_file_path)
+
+    storage = MemoryStorage({'access_token': 'dummy-token'})
+    monkeypatch.setattr(oauth_blueprint, 'storage', storage)
 
     from todo_app.app import create_app
 

@@ -9,5 +9,7 @@ services:
     environment:
       SECRET_KEY: ${SECRET_KEY}
       MONGO_URI: ${MONGO_URI}
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
     ports:
-      - "8080:80"
+      - "5000:80"

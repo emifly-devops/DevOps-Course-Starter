@@ -7,4 +7,4 @@ services:
       target: test
     env_file:
       - .flaskenv.test
-      - .env.devtest
+      - .env.public

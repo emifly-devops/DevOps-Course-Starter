@@ -12,4 +12,4 @@ services:
       OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
       OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
     ports:
-      - "5000:80"
+      - "80:80"

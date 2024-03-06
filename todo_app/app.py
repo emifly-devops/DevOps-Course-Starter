@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template, redirect, request, flash
 from flask_dance.contrib.github import github
 from werkzeug.routing import BaseConverter
+from werkzeug.middleware.proxy_fix import ProxyFix
 import pymongo
 from pymongo.errors import PyMongoError
 from dotenv import find_dotenv, load_dotenv
@@ -24,6 +25,7 @@ class ItemIdConverter(BaseConverter):
 
 def create_app():
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app)
     app.config.from_object(Config())
     app.url_map.converters['item_id'] = ItemIdConverter
     app.register_blueprint(oauth_blueprint, url_prefix='/login')

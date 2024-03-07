@@ -5,7 +5,7 @@
 ## Python and Poetry
 
 The project uses Poetry for Python to create an isolated environment and manage package dependencies.
-To prepare your system, ensure you have an official distribution of Python version 3.7+ and install Poetry using the following command:
+To prepare your system, ensure you have an official distribution of Python (at least version 3.8) and install Poetry using the following command:
 
 ```bash
 $ curl -sSL https://install.python-poetry.org | python -
@@ -57,22 +57,42 @@ For the end-to-end tests, you will need to install the dependencies in the `pack
 $ npm install
 ```
 
-You'll also need to clone a new `.env` file from the `.env.template` to store local configuration options. This is a one-time operation on first setup:
+You'll also need to copy a new `.env` file from the `.env.template` to store local configuration options. This is a one-time operation on first setup:
 
 ```bash
 $ cp .env.template .env  # (first time only)
 ```
 
-There are two values that need to be set:
+There are five values that need to be set:
 
 ```dotenv
-SECRET_KEY=secret-key
-MONGO_URI=mongo-uri
+OAUTH_CLIENT_ID=oauth-client-id
+OAUTH_CLIENT_SECRET=oauth-client-secret
+CYPRESS_OAUTH_USERNAME=cypress-oauth-username
+CYPRESS_OAUTH_PASSWORD=cypress-oauth-password
+CYPRESS_OAUTH_OTP_SECRET=cypress-oauth-otp-secret
 ```
 
-The `SECRET_KEY` setting is used to secure the Flask session. You should generate a random sequence of characters to use for this setting.
+The `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET` settings are used to provide the client details for the **non-production** GitHub app being used for authentication. (See details in the section immediately below.)
 
-The `MONGO_URI` setting is used to provide connection details for the MongoDB instance being used in production. This should be set to the primary connection string of a suitable Azure CosmosDB account. (See instructions for setting this up in the [Deployment with Docker and Azure](#Deployment-with-Docker-and-Azure) section below.)
+The `CYPRESS_OAUTH_USERNAME` and `CYPRESS_OAUTH_PASSWORD` settings are used to store a valid GitHub username-password combination to be used to log in to the app for testing purposes.
+
+If the GitHub account associated with the username and password above uses two-factor authentication, the `CYPRESS_OAUTH_OTP_SECRET` setting should be used to store the account's two-factor secret.
+This can be obtained by following the setup key link in the Authenticator App section of the account's Password and Authentication settings.
+
+## Authentication
+
+The project uses OAuth via GitHub for authentication of users.
+
+To get this working, you will first need to set up an OAuth app for non-production environments on GitHub by following the [documentation](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app).
+
+For the homepage URL field, enter the address for accessing the website locally ([`http://localhost:5000/`]() unless configured otherwise; see the development configuration section immediately below).
+
+For the callback URL field, enter [`http://localhost:5000/login/github/authorized`]().
+
+Note that you will need a second app for your production environment, where your URLs will be different.
+When creating the app, simply swap out the [`http://localhost:5000/`]() domain in each URL above for your live domain.
+If you follow the [Azure deployment instructions](#Deployment-with-Docker-and-Azure) below, this live domain will be [https://$WEBAPP_NAME.azurewebsites.net/](), where `$WEBAPP_NAME` should be swapped out for your web app name as configured in Azure.
 
 ## Running the App with a Development Configuration
 
@@ -88,7 +108,7 @@ Alternatively, if you have chosen to install Node, you can simply run the follow
 $ npm start
 ```
 
-In each case, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+In each case, visit [`http://localhost:5000/`]() in your web browser to view the app.
 
 ## Running the App with a Production Configuration
 
@@ -98,7 +118,7 @@ If you have chosen to install Vagrant, run the following to try out a production
 $ vagrant up
 ```
 
-With this option, visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app, as before.
+With this option, visit [`http://localhost:5000/`]() in your web browser to view the app, as before.
 
 If you have chosen to install Ansible, change the contents of the `inventory.ini` file to reflect your managed node's IP address and run the following from your control node:
 
@@ -112,10 +132,10 @@ With this option, visit the IP address of your managed node in your browser to v
 If you have chosen to install Docker, run the following to try out a production configuration locally:
 
 ```bash
-$ docker compose up production --build
+$ docker compose --file docker-compose.local.yml up production --build
 ```
 
-With this option, visit [`http://localhost:8080/`](http://localhost:8080/) in your web browser to view the app.
+With this option, visit [`http://localhost:5000/`]() in your web browser to view the app, as before.
 
 ## Running the Tests
 
@@ -201,17 +221,21 @@ Once you have done this, retrieve the primary connection string for your CosmosD
 $ az cosmosdb keys list --type connection-strings --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME
 ```
 
-Copy the primary connection string into your `.env` file, using it as the value for the `MONGO_URI` setting.
-
 Finally, run the following commands to set environment variables for your app:
 
 ```bash
 $ export SECRET_KEY=...
 $ export MONGO_URI=...
-$ az webapp config appsettings set --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME --settings SECRET_KEY=$SECRET_KEY MONGO_URI=$MONGO_URI
+$ export OAUTH_CLIENT_ID=...
+$ export OAUTH_CLIENT_SECRET=...
+$ az webapp config appsettings set --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME --settings SECRET_KEY=$SECRET_KEY MONGO_URI=$MONGO_URI OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
 ```
 
-You should use the same values for `SECRET_KEY` and `MONGO_URI` that you saved in your `.env` file.
+The `SECRET_KEY` setting is used to secure the Flask session. You should generate a random sequence of characters to use for this setting.
+
+The `MONGO_URI` setting should contain the primary connection string you retrieved above.
+
+For `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET`, you should **not** use the same values that you saved in your `.env` file (as these will be the **non-production** values). Instead, you should use the values for the **production** OAuth app you set up in the [Authentication](#Authentication) section above.
 
 Your deployed web app will be at [https://$WEBAPP_NAME.azurewebsites.net/]() in due course.
 
@@ -229,6 +253,16 @@ $ curl -f -X POST '...'  # (Single quotation marks important here)
 A workflow file called `ci-cd-pipeline.yml` has been set up in order to validate any non-documentation changes upon new pushes or pull requests to the project's GitHub repository.
 Upon successful validation of the changes, it is also configured to build and push a Docker image to the Docker Hub, and use this new image as the basis for an Azure web app.
 In order to get this working with a fork of the repository, it should be necessary to create the following GitHub Actions secrets:
+
+```dotenv
+OAUTH_CLIENT_ID
+OAUTH_CLIENT_SECRET
+CYPRESS_OAUTH_USERNAME
+CYPRESS_OAUTH_PASSWORD
+CYPRESS_OAUTH_OTP_SECRET
+```
+
+The values of these settings should be the same as the values in your `.env` file.
 
 ```dotenv
 DOCKERHUB_USERNAME

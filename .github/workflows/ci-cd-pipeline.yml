@@ -13,7 +13,7 @@ jobs:
     name: Build project
     runs-on: ubuntu-latest
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_USERNAME: dummy-dockerhub-username
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,8 +23,6 @@ jobs:
     name: Run Pytest tests
     needs: build
     runs-on: ubuntu-latest
-    env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,7 +33,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+      CYPRESS_OAUTH_USERNAME: ${{ secrets.CYPRESS_OAUTH_USERNAME }}
+      CYPRESS_OAUTH_PASSWORD: ${{ secrets.CYPRESS_OAUTH_PASSWORD }}
+      CYPRESS_OAUTH_OTP_SECRET: ${{ secrets.CYPRESS_OAUTH_OTP_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

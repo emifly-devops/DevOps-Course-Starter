@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+  production:
+    build:
+      context: .
+      target: production
+    depends_on:
+      - mongo
+    env_file:
+      - .env
+      - .env.public
+    environment:
+      MONGO_URI: mongodb://mongo:27017/
+    ports:
+      - "5000:80"

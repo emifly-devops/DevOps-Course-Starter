@@ -13,9 +13,11 @@ services:
       - mongo
     env_file:
       - .flaskenv
-      - .env.devtest
+      - .env.public
     environment:
       MONGO_URI: mongodb://mongo:27017/
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}
     ports:
       - "5000:5000"
     volumes:
@@ -27,3 +29,7 @@ services:
     depends_on:
       - development
     network_mode: "host"
+    environment:
+      CYPRESS_OAUTH_USERNAME: ${CYPRESS_OAUTH_USERNAME}
+      CYPRESS_OAUTH_PASSWORD: ${CYPRESS_OAUTH_PASSWORD}
+      CYPRESS_OAUTH_OTP_SECRET: ${CYPRESS_OAUTH_OTP_SECRET}

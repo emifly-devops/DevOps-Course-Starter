@@ -65,9 +65,38 @@ jobs:
       - name: Push Docker image
         run: docker compose push production
   azure:
-    name: Refresh Azure app to pull from latest available Docker image
+    name: Refresh Azure web app to pull from latest available Docker image
     needs: docker
     runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
+      RESOURCE_GROUP_NAME: ${{ secrets.RESOURCE_GROUP_NAME }}
+      STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+      TF_VAR_appservice_plan_name: ${{ secrets.TF_VAR_APPSERVICE_PLAN_NAME }}
+      TF_VAR_cosmos_account_name: ${{ secrets.TF_VAR_COSMOS_ACCOUNT_NAME }}
+      TF_VAR_dockerhub_username: ${{ secrets.TF_VAR_DOCKERHUB_USERNAME }}
+      TF_VAR_oauth_client_id: ${{ secrets.TF_VAR_OAUTH_CLIENT_ID }}
+      TF_VAR_oauth_client_secret: ${{ secrets.TF_VAR_OAUTH_CLIENT_SECRET }}
+      TF_VAR_resource_group_name: ${{ secrets.TF_VAR_RESOURCE_GROUP_NAME }}
+      TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
+      TF_VAR_webapp_name: ${{ secrets.TF_VAR_WEBAPP_NAME }}
     steps:
-      - name: Make post request to Azure app webhook URL
-        run: curl -f -X POST '${{ secrets.AZURE_APP_WEBHOOK_URL }}'
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Log into Azure using service principal
+        run: az login --service-principal --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init -backend-config=<(python -m generate_backend_config)
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
+      - name: Make post request to web app CD webhook URL
+        working-directory: terraform
+        run: curl -dH -X POST "$(terraform output -raw webapp_cd_webhook_url)"
+      - name: Log out of Azure
+        run: az logout

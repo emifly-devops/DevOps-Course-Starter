@@ -20,8 +20,11 @@ ansible
 # Docker
 Dockerfile
 
+# Terraform
+terraform
+
 # Vagrant
-Vagrantfile
+vagrant
 
 # Documentation
 README.md
@@ -32,6 +35,3 @@ README.md
 
 # Node
 node_modules
-
-# Terraform
-**/.terraform

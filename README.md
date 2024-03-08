@@ -112,7 +112,7 @@ In each case, visit [`http://localhost:5000/`]() in your web browser to view the
 
 ## Running the App with a Production Configuration
 
-If you have chosen to install Vagrant, run the following to try out a production configuration locally:
+If you have chosen to install Vagrant, run the following command from the `vagrant` folder to try out a production configuration locally:
 
 ```bash
 $ vagrant up

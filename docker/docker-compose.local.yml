@@ -7,13 +7,14 @@ services:
       - "27017:27017"
   production:
     build:
-      context: .
+      context: ..
       target: production
+      dockerfile: docker/Dockerfile
     depends_on:
       - mongo
     env_file:
-      - .env
-      - .env.public
+      - ../.env
+      - ../.env.public
     environment:
       MONGO_URI: mongodb://mongo:27017/
     ports:

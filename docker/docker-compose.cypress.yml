@@ -7,13 +7,14 @@ services:
       - "27017:27017"
   development:
     build:
-      context: .
+      context: ..
       target: development
+      dockerfile: docker/Dockerfile
     depends_on:
       - mongo
     env_file:
-      - .flaskenv
-      - .env.public
+      - ../.flaskenv
+      - ../.env.public
     environment:
       MONGO_URI: mongodb://mongo:27017/
       OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
@@ -21,11 +22,11 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./todo_app:/opt/todo-app/todo_app
+      - ../todo_app:/opt/todo-app/todo_app
   cypress:
     build:
-      context: .
-      dockerfile: Dockerfile.cypress
+      context: ..
+      dockerfile: docker/Dockerfile.cypress
     depends_on:
       - development
     network_mode: "host"

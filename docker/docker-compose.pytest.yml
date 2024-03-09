@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  pytest:
+    build:
+      context: ..
+      target: test
+      dockerfile: docker/Dockerfile
+    env_file:
+      - ../.flaskenv.test
+      - ../.env.public

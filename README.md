@@ -112,7 +112,7 @@ In each case, visit [`http://localhost:5000/`]() in your web browser to view the
 
 ## Running the App with a Production Configuration
 
-If you have chosen to install Vagrant, run the following to try out a production configuration locally:
+If you have chosen to install Vagrant, run the following command from the `vagrant` folder to try out a production configuration locally:
 
 ```bash
 $ vagrant up
@@ -129,7 +129,7 @@ $ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
 You will be prompted to enter two secrets: your Flask secret key and your Mongo URI. You should use the same values that you have stored in your `.env` file.
 With this option, visit the IP address of your managed node in your browser to view the app.
 
-If you have chosen to install Docker, run the following to try out a production configuration locally:
+If you have chosen to install Docker, navigate into the `docker` directory and run the following to try out a production configuration locally:
 
 ```bash
 $ docker compose --file docker-compose.local.yml up production --build
@@ -153,7 +153,7 @@ Alternatively, if you have chosen to install Node, you may run the following ins
 $ npm run test:pytest
 ```
 
-To run these tests in a container using Docker, use the following command instead:
+To run these tests in a container using Docker, navigate into the `docker` directory and use the following command instead:
 
 ```bash
 $ docker compose --file docker-compose.pytest.yml up pytest --build
@@ -167,20 +167,20 @@ This project uses Cypress for some basic end-to-end testing. To run these tests,
 $ npm run test:cypress
 ```
 
-To run these tests in a container using Docker, use the following command instead:
+To run these tests in a container using Docker, navigate into the `docker` directory and use the following command instead:
 
 ```bash
-$ docker compose --file docker-compose.cypress.yml up cypress --build --abort-on-container-exit
+$ docker compose --file docker-compose.cypress.yml --env-file ../.env up cypress --build --abort-on-container-exit
 ```
 
-In this case, there is no need to manually start the app - Docker will take care of this for us as well as automatically tearing it down when the tests are complete.
+In this case, there is no need to manually start the app - Docker will take care of this as well as automatically tearing it down when the tests are complete.
 
 ## Deployment with Docker and Azure
 
 If you wish to host your app's container images using the Docker Hub, you will need to [set up a Docker Hub account](https://hub.docker.com/signup).
 Once you have done so, create a public repository called `todo-app`.
 
-To build and push your production Docker image to the Docker Hub, you will need to run the following commands from your terminal, using the Docker Hub username you created previously:
+To build and push your production Docker image to the Docker Hub, you will need to first navigate into the `docker` directory and then run the following commands, using the Docker Hub username you created previously:
 
 ```bash
 $ EXPORT DOCKERHUB_USERNAME=...

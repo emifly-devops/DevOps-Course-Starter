@@ -5,7 +5,7 @@ required_vars = ["resource_group_name", "storage_account_name", "container_name"
 
 try:
     # Attempt to load config vars from file
-    with open("terraform.tfvars.json") as tfvars_file:
+    with open("backend.tfvars.json") as tfvars_file:
         tfvars = json.load(tfvars_file)
 except IOError:
     # If loading from file failed, load config vars from environment

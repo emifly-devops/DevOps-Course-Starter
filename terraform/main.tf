@@ -62,7 +62,7 @@ resource "azurerm_service_plan" "main" {
   name                = "${var.prefix}-${var.appservice_plan_name}"
   os_type             = "Linux"
   resource_group_name = data.azurerm_resource_group.main.name
-  sku_name            = "B1"
+  sku_name            = "F1"
 }
 
 resource "azurerm_linux_web_app" "main" {

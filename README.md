@@ -248,7 +248,7 @@ The `MONGO_URI` setting should contain the primary connection string you retriev
 
 For `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET`, you should **not** use the same values that you saved in your `.env` file (as these will be the **non-production** values). Instead, you should use the values for the **production** OAuth app you set up in the [Authentication](#Authentication) section above.
 
-Your deployed web app will be at [https://$WEBAPP_NAME.azurewebsites.net/]() in due course.
+Your deployed web app will be available at [https://$WEBAPP_NAME.azurewebsites.net/]() in due course.
 
 ### Option 2: Automated Steps using Terraform
 
@@ -301,6 +301,8 @@ Once these two files are set up, run the following commands to initialise your T
 $ terraform init -backend-config=<(python -m generate_backend_config)
 $ terraform apply
 ```
+
+Your deployed web app will be available at [https://prod-$WEBAPP_NAME.azurewebsites.net/]() by default, unless you change the prefix variable away from "prod".
 
 ### Refreshing the Web App
 

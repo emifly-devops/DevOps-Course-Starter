@@ -18,6 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build project
+        working-directory: docker
         run: docker compose build production
   pytest:
     name: Run Pytest tests
@@ -27,6 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run Pytest tests
+        working-directory: docker
         run: docker compose --file docker-compose.pytest.yml up pytest --build
   cypress:
     name: Run Cypress tests
@@ -42,6 +44,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run Cypress tests
+        working-directory: docker
         run: docker compose --file docker-compose.cypress.yml up cypress --build --abort-on-container-exit
   docker:
     name: Publish to Docker Hub
@@ -61,8 +64,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build Docker image
+        working-directory: docker
         run: docker compose build production
       - name: Push Docker image
+        working-directory: docker
         run: docker compose push production
   azure:
     name: Refresh Azure app to pull from latest available Docker image

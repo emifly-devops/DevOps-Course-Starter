@@ -18,7 +18,7 @@ venv
 ansible
 
 # Docker
-Dockerfile
+docker
 
 # Vagrant
 vagrant

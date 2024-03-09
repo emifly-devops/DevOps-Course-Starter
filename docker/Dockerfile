@@ -9,10 +9,10 @@ RUN ln -s $POETRY_HOME/bin/poetry /usr/local/bin/poetry
 
 WORKDIR /opt/todo-app
 
-COPY pyproject.toml poetry.toml poetry.lock ./
+COPY ../pyproject.toml ../poetry.toml ../poetry.lock ./
 RUN poetry install
 
-COPY todo_app todo_app/
+COPY ../todo_app todo_app/
 
 FROM base AS production
 
@@ -26,6 +26,6 @@ EXPOSE 5000
 
 FROM base AS test
 
-COPY tests tests/
+COPY ../tests tests/
 
 ENTRYPOINT ["poetry", "run", "pytest"]

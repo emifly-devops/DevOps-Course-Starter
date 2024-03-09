@@ -8,7 +8,7 @@ The project uses Poetry for Python to create an isolated environment and manage 
 To prepare your system, ensure you have an official distribution of Python (at least version 3.8) and install Poetry using the following command:
 
 ```bash
-$ curl -sSL https://install.python-poetry.org | python -
+curl -sSL https://install.python-poetry.org | python -
 ```
 
 ### MongoDB
@@ -34,7 +34,7 @@ A production configuration has been provided for Ansible if you wish to run the 
 To install Ansible, simply run the following in the terminal of the machine you wish to use as the control node:
 
 ```bash
-$ pip install ansible
+pip install ansible
 ```
 
 ### Docker
@@ -53,19 +53,19 @@ To install Terraform, follow the [instructions on the website](https://developer
 The project uses a virtual environment to isolate package dependencies. To create the virtual environment and install required packages, run the following from your preferred shell:
 
 ```bash
-$ poetry install
+poetry install
 ```
 
 For the end-to-end tests, you will need to install the dependencies in the `package.json` file using the following command:
 
 ```bash
-$ npm install
+npm install
 ```
 
 You'll also need to copy a new `.env` file from the `.env.template` to store local configuration options. This is a one-time operation on first setup:
 
 ```bash
-$ cp .env.template .env  # (first time only)
+cp .env.template .env  # (first time only)
 ```
 
 There are five values that need to be set:
@@ -104,13 +104,13 @@ If you follow the [Azure deployment instructions](#Deployment-with-Docker-and-Az
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
 
 ```bash
-$ poetry run flask run
+poetry run flask run
 ```
 
 Alternatively, if you have chosen to install Node, you can simply run the following command:
 
 ```bash
-$ npm start
+npm start
 ```
 
 In each case, visit [`http://localhost:5000/`]() in your web browser to view the app.
@@ -120,7 +120,7 @@ In each case, visit [`http://localhost:5000/`]() in your web browser to view the
 If you have chosen to install Vagrant, run the following command from the `vagrant` folder to try out a production configuration locally:
 
 ```bash
-$ vagrant up
+vagrant up
 ```
 
 With this option, visit [`http://localhost:5000/`]() in your web browser to view the app, as before.
@@ -128,7 +128,7 @@ With this option, visit [`http://localhost:5000/`]() in your web browser to view
 If you have chosen to install Ansible, change the contents of the `inventory.ini` file to reflect your managed node's IP address and run the following from your control node:
 
 ```bash
-$ ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
+ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
 ```
 
 You will be prompted to enter two secrets: your Flask secret key and your Mongo URI. You should use the same values that you have stored in your `.env` file.
@@ -137,7 +137,7 @@ With this option, visit the IP address of your managed node in your browser to v
 If you have chosen to install Docker, navigate into the `docker` directory and run the following to try out a production configuration locally:
 
 ```bash
-$ docker compose --file docker-compose.local.yml up production --build
+docker compose --file docker-compose.local.yml up production --build
 ```
 
 With this option, visit [`http://localhost:5000/`]() in your web browser to view the app, as before.
@@ -149,19 +149,19 @@ With this option, visit [`http://localhost:5000/`]() in your web browser to view
 Use the following command to run the unit and integration tests associated with the app:
 
 ```bash
-$ poetry run pytest
+poetry run pytest
 ```
 
 Alternatively, if you have chosen to install Node, you may run the following instead:
 
 ```bash
-$ npm run test:pytest
+npm run test:pytest
 ```
 
 To run these tests in a container using Docker, navigate into the `docker` directory and use the following command instead:
 
 ```bash
-$ docker compose --file docker-compose.pytest.yml up pytest --build
+docker compose --file docker-compose.pytest.yml up pytest --build
 ```
 
 ### End-to-end Tests with Cypress
@@ -169,13 +169,13 @@ $ docker compose --file docker-compose.pytest.yml up pytest --build
 This project uses Cypress for some basic end-to-end testing. To run these tests, you will need to first start the app, and then use the following command:
 
 ```bash
-$ npm run test:cypress
+npm run test:cypress
 ```
 
 To run these tests in a container using Docker, navigate into the `docker` directory and use the following command instead:
 
 ```bash
-$ docker compose --file docker-compose.cypress.yml --env-file ../.env up cypress --build --abort-on-container-exit
+docker compose --file docker-compose.cypress.yml --env-file ../.env up cypress --build --abort-on-container-exit
 ```
 
 In this case, there is no need to manually start the app - Docker will take care of this as well as automatically tearing it down when the tests are complete.
@@ -190,10 +190,10 @@ Once you have done so, create a public repository called `todo-app`.
 To build and push your production Docker image to the Docker Hub manually, you will need to first navigate into the `docker` directory and then run the following commands, using the Docker Hub username you created previously:
 
 ```bash
-$ EXPORT DOCKERHUB_USERNAME=...
-$ docker login
-$ docker compose build production
-$ docker compose push production
+EXPORT DOCKERHUB_USERNAME=...
+docker login
+docker compose build production
+docker compose push production
 ```
 
 To set up an Azure account, first ensure you have a Microsoft account, and then visit the [Azure Portal](https://portal.azure.com) and use this Microsoft account to register.
@@ -206,22 +206,22 @@ For Azure, if you wish to manually set up resources within your new account, you
 For this, run the following command and follow the ensuing steps:
 
 ```bash
-$ az login
+az login
 ```
 
 To manually create Azure App Service and Azure CosmosDB resources for your app, you will need to run the following commands from a Bash shell, setting the environment variables to appropriate values:
 
 ```bash
-$ export RESOURCE_GROUP_NAME=...
-$ export APPSERVICE_PLAN_NAME=...
-$ export WEBAPP_NAME=...
-$ export DOCKERHUB_USERNAME=...
-$ export COSMOS_ACCOUNT_NAME=...
-$ az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
-$ az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
-$ az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
-$ az cosmosdb create --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --kind MongoDB --capabilities EnableServerless --server-version 4.2
-$ az cosmosdb mongodb database create --account-name $COSMOS_ACCOUNT_NAME --name todo_app --resource-group $RESOURCE_GROUP_NAME
+export RESOURCE_GROUP_NAME=...
+export APPSERVICE_PLAN_NAME=...
+export WEBAPP_NAME=...
+export DOCKERHUB_USERNAME=...
+export COSMOS_ACCOUNT_NAME=...
+az appservice plan create -g $RESOURCE_GROUP_NAME -n $APPSERVICE_PLAN_NAME --sku F1 --is-linux
+az webapp create -g $RESOURCE_GROUP_NAME -p $APPSERVICE_PLAN_NAME -n $WEBAPP_NAME --deployment-container-image-name docker.io/$DOCKERHUB_USERNAME/todo-app:latest
+az webapp config appsettings set -g $RESOURCE_GROUP_NAME -n $WEBAPP_NAME --settings `cat .env | grep -v '^#' | tr '\n' ' '`
+az cosmosdb create --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --kind MongoDB --capabilities EnableServerless --server-version 4.2
+az cosmosdb mongodb database create --account-name $COSMOS_ACCOUNT_NAME --name todo_app --resource-group $RESOURCE_GROUP_NAME
 ```
 
 Note that you should use the resource group name and Docker Hub username you created previously, but you will need to choose your app service plan name, web app name and CosmosDB account name, with the web app name needing to be globally unique within Azure.
@@ -229,17 +229,17 @@ Note that you should use the resource group name and Docker Hub username you cre
 Once you have done this, retrieve the primary connection string for your CosmosDB account by running the following command, ensuring that your environment variables from the previous set of commands are still set:
 
 ```bash
-$ az cosmosdb keys list --type connection-strings --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME
+az cosmosdb keys list --type connection-strings --name $COSMOS_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME
 ```
 
 Finally, run the following commands to set environment variables for your app:
 
 ```bash
-$ export SECRET_KEY=...
-$ export MONGO_URI=...
-$ export OAUTH_CLIENT_ID=...
-$ export OAUTH_CLIENT_SECRET=...
-$ az webapp config appsettings set --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME --settings SECRET_KEY=$SECRET_KEY MONGO_URI=$MONGO_URI OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
+export SECRET_KEY=...
+export MONGO_URI=...
+export OAUTH_CLIENT_ID=...
+export OAUTH_CLIENT_SECRET=...
+az webapp config appsettings set --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME --settings SECRET_KEY=$SECRET_KEY MONGO_URI=$MONGO_URI OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
 ```
 
 The `SECRET_KEY` setting is used to secure the Flask session. You should generate a random sequence of characters to use for this setting.
@@ -258,8 +258,8 @@ As preparation, you should manually create an Azure storage account to contain y
 export RESOURCE_GROUP_NAME=...
 export STORAGE_ACCOUNT_NAME=...
 export CONTAINER_NAME=...
-$ az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
-$ az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
+az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
+az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
 ```
 
 You should use the resource group name that you created previously, but you will need to choose your storage account name and container name.
@@ -298,11 +298,12 @@ The requirements for each value are identical to those in that section.
 Once these two files are set up, run the following commands to initialise your Terraform backend and resources:
 
 ```bash
-$ terraform init -backend-config=<(python -m generate_backend_config)
-$ terraform apply
+terraform init -backend-config=<(python -m generate_backend_config)
+terraform apply
 ```
 
 Your deployed web app will be available at [https://prod-$WEBAPP_NAME.azurewebsites.net/]() by default, unless you change the prefix variable away from "prod".
+Note that your `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET` must be for a GitHub OAuth app set up with this as the domain for the homepage and redirect URLs (see the [Authentication](#Authentication) section above) .
 
 ### Refreshing the Web App
 
@@ -310,14 +311,14 @@ To manually refresh your app when you push a new version of your image to the Do
 One way of doing this is to install the cURL utility and run the following command, filling in your webhook URL:
 
 ```bash
-$ curl -f -X POST '...'  # (Single quotation marks important here)
+curl -f -X POST '...'  # (Single quotation marks important here)
 ```
 
 If you set up your infrastructure manually, you should use the same webhook URL you obtained in the previous section.
 If you used Terraform to set up your infrastructure, you can obtain your webhook URL by running the following command:
 
 ```bash
-$ terraform output -raw webapp_cd_webhook_url
+terraform output -raw webapp_cd_webhook_url
 ```
 
 ## Pipelines
@@ -339,17 +340,17 @@ These values will be used to authenticate with Azure using a service principal a
 To set one up, first obtain your Azure subscription ID using the following command:
 
 ```bash
-$ az account list
+az account list
 ```
 
 From here, pick out the subscription ID that corresponds with the subscription that contains your resource group.
 Once you have this, run the following commands to create the service principal:
 
 ```bash
-$ export SUBSCRIPTION_ID=...
-$ export RESOURCE_GROUP_NAME=...
-$ export SERVICE_PRINCIPAL_NAME=...
-$ az ad sp create-for-rbac --name $SERVICE_PRINCIPAL_NAME --role Contributor --scopes "/subscriptions/$SUBSCRIPION_ID/resourceGroups/$RESOURCE_GROUP_NAME"
+export SUBSCRIPTION_ID=...
+export RESOURCE_GROUP_NAME=...
+export SERVICE_PRINCIPAL_NAME=...
+az ad sp create-for-rbac --name $SERVICE_PRINCIPAL_NAME --role Contributor --scopes "/subscriptions/$SUBSCRIPION_ID/resourceGroups/$RESOURCE_GROUP_NAME"
 ```
 
 You should use the subscription ID you obtained in the previous step and the same resource group name you have used in earlier steps.

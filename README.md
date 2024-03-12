@@ -200,14 +200,14 @@ To set up an Azure account, first ensure you have a Microsoft account, and then 
 Once you have done this, you will also need to create a subscription - this is achieved by clicking the Subscriptions blade under Azure services and then clicking Add.
 Next, within this subscription, create a resource group by choosing the Resource groups blade, again under Azure services, and then clicking Create.
 
-### Option 1: Manual Steps
-
-For Azure, if you wish to manually set up resources within your new account, you need to log into it locally.
+For Azure, if you wish to set up resources within your new account locally, you first need to log in.
 For this, run the following command and follow the ensuing steps:
 
 ```bash
 az login
 ```
+
+### Option 1: Manual Steps
 
 To manually create Azure App Service and Azure CosmosDB resources for your app, you will need to run the following commands from a Bash shell, setting the environment variables to appropriate values:
 

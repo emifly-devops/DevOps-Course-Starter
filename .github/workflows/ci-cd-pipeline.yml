@@ -92,8 +92,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Log into Azure using service principal
-        run: az login --service-principal --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
       - name: Terraform init
         working-directory: terraform
         run: terraform init -backend-config=<(python -m generate_backend_config)
@@ -103,5 +101,3 @@ jobs:
       - name: Make post request to web app CD webhook URL
         working-directory: terraform
         run: curl -dH -X POST "$(terraform output -raw webapp_cd_webhook_url)"
-      - name: Log out of Azure
-        run: az logout
